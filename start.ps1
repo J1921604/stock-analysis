@@ -53,13 +53,12 @@ Write-Host ""
 
 # HTTPサーバー起動（バックグラウンドでジョブとして実行）
 Write-Host "サーバーを起動中..." -ForegroundColor Yellow
-# srcディレクトリから起動
-Push-Location src
+$srcPath = Join-Path $PSScriptRoot "src"
 $serverJob = Start-Job -ScriptBlock { 
-    Set-Location $using:PWD
+    param($path)
+    Set-Location $path
     python -m http.server 5000 
-}
-Pop-Location
+} -ArgumentList $srcPath
 
 # サーバー起動待機（3秒）
 Start-Sleep -Seconds 3
