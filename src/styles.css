@@ -38,6 +38,8 @@ body {
     color: var(--text-primary);
     background: var(--dark-bg);
     max-width: 1600px;
+    max-height: 900px;
+    overflow-y: auto;
     margin: 0 auto;
     position: relative;
 }

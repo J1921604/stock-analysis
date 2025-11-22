@@ -51,8 +51,26 @@ Phase 3以降の詳細は [タスク定義書](https://github.com/J1921604/stock
 ### 前提条件
 
 - Python 3.11+
-- Git
+- Git（Git LFS有効化済み）
 - PowerShell 5.1+ (Windows) または bash (Linux/Mac)
+- **EDINET API Subscription Key**（無料取得必須）
+
+### EDINET API Key取得
+
+EDINET API v2（2024年4月以降）では Subscription Key が必須です:
+
+1. **申込ページ**: https://disclosure2.edinet-fsa.go.jp/WZEK0020.aspx
+2. 「Subscription Key申込」から無料登録
+3. メールでキーが即時送付される
+4. `.env`ファイルに設定:
+
+```bash
+# .env.example をコピー
+cp .env.example .env
+
+# エディタで .env を開き、キーを設定
+# EDINET_API_KEY=your_subscription_key_here
+```
 
 ### ローカル環境構築
 

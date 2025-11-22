@@ -45,9 +45,17 @@ jobs:
           python scripts/insert_sample_data.py --db data/db/stock-analysis.db
       
       - name: Fetch XBRL data (TEPCO/中部電力/JERA)
+        env:
+          EDINET_API_KEY: ${{ secrets.EDINET_API_KEY }}
         run: |
-          python scripts/fetch_xbrl.py --ticker 9501 --output data/raw/xbrl || echo "XBRL fetch failed, using cached data"
-          python scripts/fetch_xbrl.py --ticker 9502 --output data/raw/xbrl || echo "XBRL fetch failed, using cached data"
+          if [ -z "$EDINET_API_KEY" ]; then
+            echo "[WARNING] EDINET_API_KEY not set. Skipping XBRL fetch."
+            echo "Get your free key at https://disclosure2.edinet-fsa.go.jp/WZEK0020.aspx"
+            echo "Set as GitHub Secret: Settings → Secrets → EDINET_API_KEY"
+          else
+            python scripts/fetch_xbrl.py --ticker 9501 --output data/raw/xbrl || echo "[FALLBACK] XBRL fetch failed, using cached data"
+            python scripts/fetch_xbrl.py --ticker 9502 --output data/raw/xbrl || echo "[FALLBACK] XBRL fetch failed, using cached data"
+          fi
       
       - name: Fetch stock prices (TEPCO/中部電力)
         run: |

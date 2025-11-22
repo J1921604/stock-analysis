@@ -94,6 +94,38 @@ flowchart TB
 - GitHub アカウント
 - Git インストール済み
 - Python 3.11+ インストール済み
+- **EDINET API Subscription Key**（無料・必須）
+
+### EDINET API Key取得と設定
+
+**重要**: 2024年4月以降、EDINET API v2では Subscription Key が必須です。
+
+#### 1. キー取得
+
+1. EDINET APIポータル: https://disclosure2.edinet-fsa.go.jp/WZEK0020.aspx
+2. 「Subscription Key申込」から無料登録
+3. メールでキーが即時送付される
+
+#### 2. GitHub Secretsに登録
+
+```bash
+# GitHubリポジトリページで以下の手順:
+Settings → Secrets and variables → Actions → New repository secret
+
+# Secret設定:
+Name: EDINET_API_KEY
+Value: (メールで受け取ったキー)
+```
+
+#### 3. ローカル環境設定
+
+```bash
+# .env.example をコピー
+cp .env.example .env
+
+# エディタで .env を編集
+# EDINET_API_KEY=your_subscription_key_here
+```
 
 ### 1. リポジトリクローン
 

@@ -51,12 +51,33 @@ Write-Host "  終了するには Ctrl+C を押してください" -ForegroundCol
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
 
-# ブラウザを自動起動（2秒待機してからサーバー起動）
+# HTTPサーバー起動（バックグラウンドでジョブとして実行）
+Write-Host "サーバーを起動中..." -ForegroundColor Yellow
+$serverJob = Start-Job -ScriptBlock { python -m http.server 5000 }
+
+# サーバー起動待機（3秒）
+Start-Sleep -Seconds 3
+
+# ブラウザを自動起動
+Write-Host "ブラウザを起動しています..." -ForegroundColor Yellow
 Start-Process "http://localhost:5000/src/index.html"
-Start-Sleep -Seconds 2
 
-# HTTPサーバー起動（フォアグラウンドで実行）
-python -m http.server 5000
+Write-Host ""
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "  サーバーが正常に起動しました！" -ForegroundColor Cyan
+Write-Host "  終了するには Ctrl+C を押してください" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 
-# サーバー終了後にPowerShellウィンドウを閉じる
-exit
+# ジョブの出力を監視（フォアグラウンドで待機）
+try {
+    while ($true) {
+        Receive-Job -Job $serverJob -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds 500
+    }
+} finally {
+    # Ctrl+C時にジョブを停止
+    Stop-Job -Job $serverJob -ErrorAction SilentlyContinue
+    Remove-Job -Job $serverJob -ErrorAction SilentlyContinue
+    Write-Host ""
+    Write-Host "サーバーを停止しました。" -ForegroundColor Yellow
+}

@@ -45,17 +45,27 @@ logger = logging.getLogger(__name__)
 
 
 class EDINETClient:
-    """EDINET API クライアント"""
+    """EDINET API クライアント (API v2 - 2024年4月以降)"""
     
-    BASE_URL = "https://disclosure.edinet-fsa.go.jp/api/v1"
+    BASE_URL = "https://api.edinet-fsa.go.jp/api/v2"
     
-    def __init__(self, rate_limit_delay: float = 1.0, connect_timeout: int = 10, read_timeout: int = 30):
+    def __init__(self, api_key: Optional[str] = None, rate_limit_delay: float = 1.0, connect_timeout: int = 10, read_timeout: int = 30):
         """
         Args:
+            api_key: EDINET API Subscription Key（環境変数EDINET_API_KEYから自動取得）
             rate_limit_delay: リクエスト間の遅延時間（秒）
             connect_timeout: 接続タイムアウト（秒）
             read_timeout: 読み取りタイムアウト（秒）
         """
+        # API Keyの取得（引数 > 環境変数）
+        import os
+        self.api_key = api_key or os.getenv('EDINET_API_KEY')
+        if not self.api_key:
+            logger.warning(
+                "EDINET_API_KEY not found. Set environment variable or pass api_key argument. "
+                "Get your free key at https://disclosure2.edinet-fsa.go.jp/WZEK0020.aspx"
+            )
+        
         self.rate_limit_delay = rate_limit_delay
         self.last_request_time = 0
         self.connect_timeout = connect_timeout
@@ -63,6 +73,14 @@ class EDINETClient:
         
         # リトライ設定付きセッション
         self.session = requests.Session()
+        
+        # EDINET API v2要求ヘッダー
+        self.session.headers.update({
+            'User-Agent': 'stock-analysis/1.0.0 (https://github.com/J1921604/stock-analysis)',
+        })
+        if self.api_key:
+            self.session.headers.update({'Subscription-Key': self.api_key})
+        
         retries = Retry(
             total=3,
             backoff_factor=1,  # 1秒、2秒、4秒
