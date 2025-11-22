@@ -59,18 +59,22 @@ Phase 3以降の詳細は [タスク定義書](https://github.com/J1921604/stock
 
 EDINET API v2（2024年4月以降）では Subscription Key が必須です:
 
-1. **申込ページ**: https://disclosure2.edinet-fsa.go.jp/WZEK0020.aspx
+1. **申込ページ**: https://disclosure2.edinet-fsa.go.jp/WEEK0010.aspx
 2. 「Subscription Key申込」から無料登録
-3. メールでキーが即時送付される
-4. `.env`ファイルに設定:
+3. メールでキーが即時送付される（32文字の英数字）
+4. `.env`ファイルに設定（**引用符不要**）:
 
 ```bash
 # .env.example をコピー
 cp .env.example .env
 
-# エディタで .env を開き、キーを設定
+# エディタで .env を開き、キーをそのまま記載
 # EDINET_API_KEY=your_subscription_key_here
 ```
+
+**参考資料**:
+- API仕様書: https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/WZEK0110.html
+- 利用ガイド(PDF): https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/download/ESE140206.pdf
 
 ### ローカル環境構築
 
@@ -93,7 +97,7 @@ cd stock-analysis
 |-------------|------|--------|
 | **完全実装仕様書** | AI再現用完全仕様 | [docs/完全仕様書.md](https://github.com/J1921604/stock-analysis/blob/main/docs/完全仕様書.md) |
 | **要件定義書** | ビジネス要件・受入基準 | [specs/001-stock-analysis-system/checklists/requirements.md](https://github.com/J1921604/stock-analysis/blob/main/specs/001-stock-analysis-system/checklists/requirements.md) |
-| **実装計画書** | Phase 1-5実装計画 | [specs/001-stock-analysis-system/plan.md](https://github.com/J1921604/stock-analysis/blob/main/specs/001-stock-analysis-system/plan.md) |
+| **実装計画書** | Phase 1-5実装計画 | [specs/feature/impl-001-stock-analysis-system/plan.md](https://github.com/J1921604/stock-analysis/blob/main/specs/feature/impl-001-stock-analysis-system/plan.md) |
 | **デプロイガイド** | GitHub Actions/Pages設定 | [docs/DEPLOY_GUIDE.md](https://github.com/J1921604/stock-analysis/blob/main/docs/DEPLOY_GUIDE.md) |
 | **開発憲法** | 品質・セキュリティ原則 | [.specify/memory/constitution.md](https://github.com/J1921604/stock-analysis/blob/main/.specify/memory/constitution.md) |
 
