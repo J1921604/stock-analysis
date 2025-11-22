@@ -1,27 +1,30 @@
 # 株式分析システム 完全仕様書
 
-**バージョン**: 1.0.0
+**バージョン**: 1.0.1
 **作成日**: 2025年11月22日
 **最終更新**: 2025年11月22日
-**ステータス**: 仕様策定完了
+**ステータス**: Phase 1・Phase 4（一部）実装完了
 **プロジェクト**: stock-analysis
+**GitHub**: https://github.com/J1921604/stock-analysis
+**GitHub Pages**: https://j1921604.github.io/stock-analysis/
 
 ---
 
 ## 📋 目次
 
 1. [システム概要](#システム概要)
-2. [アーキテクチャ設計](#アーキテクチャ設計)
-3. [データモデル](#データモデル)
-4. [機能仕様](#機能仕様)
-5. [技術スタック](#技術スタック)
-6. [ストレージ戦略](#ストレージ戦略)
-7. [バッチ処理仕様](#バッチ処理仕様)
-8. [解析ページ仕様](#解析ページ仕様)
-9. [通知システム](#通知システム)
-10. [デプロイメント](#デプロイメント)
-11. [セキュリティ](#セキュリティ)
-12. [パフォーマンス要件](#パフォーマンス要件)
+2. [実装状況](#実装状況)
+3. [アーキテクチャ設計](#アーキテクチャ設計)
+4. [データモデル](#データモデル)
+5. [機能仕様](#機能仕様)
+6. [技術スタック](#技術スタック)
+7. [ストレージ戦略](#ストレージ戦略)
+8. [バッチ処理仕様](#バッチ処理仕様)
+9. [解析ページ仕様](#解析ページ仕様)
+10. [通知システム](#通知システム)
+11. [デプロイメント](#デプロイメント)
+12. [セキュリティ](#セキュリティ)
+13. [パフォーマンス要件](#パフォーマンス要件)
 
 ---
 
@@ -58,7 +61,135 @@ flowchart TB
     style implementation fill:#c8e6c9
 ```
 
-### 主要機能
+---
+
+## 実装状況
+
+### Phase 1（基盤構築）✅ 完了
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#4caf50'}}}%%
+graph LR
+    A[T001: Python環境] --> B[T002: Git LFS設定]
+    B --> C[T003: SQLスキーマ作成]
+    C --> D[T004: DB初期化スクリプト]
+    D --> E[T005: ディレクトリ構造]
+    E --> F[T006: requirements.txt]
+    
+    style A fill:#4caf50,stroke:#2e7d32,color:#fff
+    style B fill:#4caf50,stroke:#2e7d32,color:#fff
+    style C fill:#4caf50,stroke:#2e7d32,color:#fff
+    style D fill:#4caf50,stroke:#2e7d32,color:#fff
+    style E fill:#4caf50,stroke:#2e7d32,color:#fff
+    style F fill:#4caf50,stroke:#2e7d32,color:#fff
+```
+
+**完了ファイル**:
+- `requirements.txt`: 15パッケージ定義
+- `.gitattributes`: Git LFS設定（*.db、*.db.br等）
+- `schema.sql`: 6テーブル + 17インデックス
+- `scripts/init_db.py`: DB初期化スクリプト（113行）
+- `scripts/create_dirs.py`: ディレクトリ構造作成（62行）
+- `data/db/stock-analysis.db`: 初期化済みDB（6テーブル、16インデックス、2サンプル企業）
+
+### Phase 2（データパイプライン）⚪ 未着手
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#bdbdbd'}}}%%
+graph LR
+    A[T007: XBRL取得] --> B[T008: XBRLテスト]
+    C[T009: 株価取得] --> D[T010: 株価テスト]
+    E[T011: XBRLパース] --> F[T012: パーステスト]
+    G[T013: DBインポート] --> H[T014: インポートテスト]
+    
+    style A fill:#bdbdbd,stroke:#757575,color:#000
+    style B fill:#bdbdbd,stroke:#757575,color:#000
+    style C fill:#bdbdbd,stroke:#757575,color:#000
+    style D fill:#bdbdbd,stroke:#757575,color:#000
+    style E fill:#bdbdbd,stroke:#757575,color:#000
+    style F fill:#bdbdbd,stroke:#757575,color:#000
+    style G fill:#bdbdbd,stroke:#757575,color:#000
+    style H fill:#bdbdbd,stroke:#757575,color:#000
+```
+
+### Phase 3（解析エンジン）⚪ 未着手
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#bdbdbd'}}}%%
+graph LR
+    A[T015: NetNet計算] --> B[T016: NetNetテスト]
+    C[T017: オニールスクリーナー] --> D[T018: オニールテスト]
+    E[T019: マーケット天井検出] --> F[T020: 天井テスト]
+    
+    style A fill:#bdbdbd,stroke:#757575,color:#000
+    style B fill:#bdbdbd,stroke:#757575,color:#000
+    style C fill:#bdbdbd,stroke:#757575,color:#000
+    style D fill:#bdbdbd,stroke:#757575,color:#000
+    style E fill:#bdbdbd,stroke:#757575,color:#000
+    style F fill:#bdbdbd,stroke:#757575,color:#000
+```
+
+### Phase 4（フロントエンド）🟡 50%完了
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#ff9800'}}}%%
+graph LR
+    A[T021: HTML作成] --> B[T022: CSS作成]
+    B --> C[T023: sqlite-wasm]
+    C --> D[T024: データ表示]
+    D --> E[T025: チャート統合]
+    E --> F[T026: フロントエンドテスト]
+    G[T028: デプロイワークフロー]
+    
+    style A fill:#4caf50,stroke:#2e7d32,color:#fff
+    style B fill:#4caf50,stroke:#2e7d32,color:#fff
+    style C fill:#bdbdbd,stroke:#757575,color:#000
+    style D fill:#bdbdbd,stroke:#757575,color:#000
+    style E fill:#bdbdbd,stroke:#757575,color:#000
+    style F fill:#bdbdbd,stroke:#757575,color:#000
+    style G fill:#4caf50,stroke:#2e7d32,color:#fff
+```
+
+**完了ファイル**:
+- `src/index.html`: ホームページ（150行）
+- `src/pages/netnet.html`: NetNetPBR分析ページ（130行）
+- `src/pages/oneil.html`: オニールスクリーナーページ（140行）
+- `src/pages/market-top.html`: マーケット天井検出ページ（145行）
+- `src/styles.css`: レスポンシブCSS（400行）
+- `.github/workflows/deploy.yml`: GitHub Pages自動デプロイ（60行）
+
+### Phase 5（自動化・通知）🟡 33%完了
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#ff9800'}}}%%
+graph LR
+    A[T027: 日次バッチ] --> B[T028: デプロイワークフロー]
+    B --> C[T029: 通知システム]
+    C --> D[T030: エラーハンドリング]
+    D --> E[T031: リトライロジック]
+    E --> F[T032: 統合テスト]
+    
+    style A fill:#bdbdbd,stroke:#757575,color:#000
+    style B fill:#4caf50,stroke:#2e7d32,color:#fff
+    style C fill:#bdbdbd,stroke:#757575,color:#000
+    style D fill:#bdbdbd,stroke:#757575,color:#000
+    style E fill:#bdbdbd,stroke:#757575,color:#000
+    style F fill:#bdbdbd,stroke:#757575,color:#000
+```
+
+### 全体進捗
+
+```mermaid
+%%{init: {'theme':'base'}}%%
+pie
+    title タスク完了率（9/32タスク）
+    "完了" : 9
+    "未着手" : 23
+```
+
+---
+
+## 主要機能
 
 1. **ネットネットバリュー株ランキング**
    - 即時現金化可能資産から総負債を引いた独自PBR算出

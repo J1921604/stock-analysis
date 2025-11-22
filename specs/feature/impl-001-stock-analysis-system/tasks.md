@@ -1413,7 +1413,7 @@ flowchart TB
 
 ### HTML/CSS（Week 5: Day 4-7）
 
-- [ ] T021 [P] [Phase4] HTMLページ作成: src/index.html, src/pages/netnet.html, src/pages/oneil.html, src/pages/market-top.html（レスポンシブデザイン、ナビゲーション、テーブル構造、チャートコンテナ）
+- [X] T021 [P] [Phase4] HTMLページ作成: src/index.html, src/pages/netnet.html, src/pages/oneil.html, src/pages/market-top.html（レスポンシブデザイン、ナビゲーション、テーブル構造、チャートコンテナ）
   - **詳細**:
     - ページ構成:
       - `src/index.html`: ランディングページ（システム概要、リンク集）
@@ -1564,7 +1564,7 @@ flowchart TB
   - **時間**: 1日
   - **ファイル**: `src/index.html`, `src/pages/netnet.html`, `src/pages/oneil.html`, `src/pages/market-top.html`
 
-- [ ] T022 [P] [Phase4] CSSスタイル作成 src/styles.css（CSS Grid レイアウト、カラーパレット、テーブルスタイル、レスポンシブブレークポイント、Lighthouse Performance >= 90）
+- [X] T022 [P] [Phase4] CSSスタイル作成 src/styles.css（CSS Grid レイアウト、カラーパレット、テーブルスタイル、レスポンシブブレークポイント、Lighthouse Performance >= 90）
   - **詳細**:
     - CSS Grid レイアウト: 3カラムデザイン（デスクトップ）、1カラム（モバイル）
     - カラーパレット:
@@ -2412,7 +2412,7 @@ flowchart LR
   - **時間**: 1日
   - **ファイル**: `.github/workflows/daily-update.yml`
 
-- [ ] T028 [Phase5] GitHub Pagesデプロイワークフロー .github/workflows/deploy.yml を作成（src/変更時自動デプロイ、ビルド成果物アップロード）
+- [X] T028 [Phase5] GitHub Pagesデプロイワークフロー .github/workflows/deploy.yml を作成（src/変更時自動デプロイ、ビルド成果物アップロード）
   - **詳細**:
     - トリガー: プルリクエストマージ（main ブランチ）、src/ ディレクトリ変更時
     - ジョブフロー:
