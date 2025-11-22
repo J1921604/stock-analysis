@@ -4,11 +4,13 @@
 
 Usage:
     python scripts/init_db.py --db data/db/stock-analysis.db
+    python scripts/init_db.py --db data/db/stock-analysis.db --force  # CI環境用
 """
 
 import argparse
 import sqlite3
 import logging
+import os
 from pathlib import Path
 
 logging.basicConfig(
@@ -18,13 +20,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def init_database(db_path, schema_path=None):
+def init_database(db_path, schema_path=None, force=False):
     """
     データベース初期化
     
     Args:
         db_path: SQLiteデータベースパス（str or Path）
         schema_path: SQLスキーマファイルパス（str or Path）
+        force: 確認なしで既存DB削除（CI環境用）
     """
     # Path型に変換
     db_path = Path(db_path)
@@ -40,9 +43,13 @@ def init_database(db_path, schema_path=None):
         # 既存DBチェック
         if db_path.exists():
             logger.warning(f"Database already exists: {db_path}")
-            # テスト環境では自動削除
+            
+            # 自動削除条件: pytest環境、--forceオプション、CI環境
             import sys
-            if 'pytest' in sys.modules:
+            is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
+            auto_delete = 'pytest' in sys.modules or force or is_ci
+            
+            if auto_delete:
                 db_path.unlink()
                 logger.info(f"Deleted existing database: {db_path}")
             else:
@@ -149,13 +156,15 @@ def main():
                         help='Database file path (default: data/db/stock-analysis.db)')
     parser.add_argument('--schema', type=str, default='schema.sql',
                         help='Schema file path (default: schema.sql)')
+    parser.add_argument('--force', action='store_true',
+                        help='Force delete existing database without confirmation (for CI/CD)')
     
     args = parser.parse_args()
     
     db_path = Path(args.db)
     schema_path = Path(args.schema)
     
-    init_database(db_path, schema_path)
+    init_database(db_path, schema_path, force=args.force)
 
 
 if __name__ == '__main__':

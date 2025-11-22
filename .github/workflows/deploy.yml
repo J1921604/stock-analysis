@@ -38,7 +38,11 @@ jobs:
       
       - name: Initialize database
         run: |
-          python scripts/init_db.py --db data/db/stock-analysis.db --schema schema.sql
+          python scripts/init_db.py --db data/db/stock-analysis.db --schema schema.sql --force
+      
+      - name: Insert sample data
+        run: |
+          python scripts/insert_sample_data.py --db data/db/stock-analysis.db
       
       - name: Run data pipeline (placeholder)
         run: |
