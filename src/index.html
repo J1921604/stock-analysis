@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>株式分析システム</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">📊 株式分析システム</div>
+            <button class="hamburger" aria-label="メニュー" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">ホーム</a></li>
+                <li><a href="pages/netnet.html">NetNetPBR</a></li>
+                <li><a href="pages/oneil.html">オニール</a></li>
+                <li><a href="pages/market-top.html">マーケット天井</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <h1>株式分析システム</h1>
+            <p class="subtitle">バフェット・グレアム・リバモア・オニールの投資戦略を実装</p>
+            <p class="description">
+                完全自動化された株式分析システムで、データ駆動型投資を実現します。<br>
+                EDINET XBRLデータを活用し、割安株検出・成長株スクリーニング・市場リスク判定を提供します。
+            </p>
+        </section>
+        
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h2>NetNetPBR分析</h2>
+                <p>即時現金化可能資産ベースの割安株検出</p>
+                <ul class="feature-list">
+                    <li>グレアムの投資哲学に基づく</li>
+                    <li>保守的な資産評価（割引率適用）</li>
+                    <li>NetNetPBR < 1.0で割安判定</li>
+                </ul>
+                <a href="pages/netnet.html" class="btn btn-primary">詳細を見る</a>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h2>オニールスクリーナー</h2>
+                <p>EPS成長率・リラティブストレングス分析</p>
+                <ul class="feature-list">
+                    <li>EPS成長率（3年・5年CAGR）</li>
+                    <li>リラティブストレングス（52週）</li>
+                    <li>売上高成長率・利益率チェック</li>
+                </ul>
+                <a href="pages/oneil.html" class="btn btn-primary">詳細を見る</a>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚠️</div>
+                <h2>マーケット天井検出</h2>
+                <p>分配日カウントによる市場リスク判定</p>
+                <ul class="feature-list">
+                    <li>分配日判定（TOPIX下落 + 出来高増）</li>
+                    <li>25営業日間カウント</li>
+                    <li>5回以上で天井警告</li>
+                </ul>
+                <a href="pages/market-top.html" class="btn btn-primary">詳細を見る</a>
+            </div>
+        </section>
+        
+        <section class="tech-stack">
+            <h2>技術スタック</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h3>バックエンド</h3>
+                    <p>Python 3.11、pandas、lxml、SQLite</p>
+                </div>
+                <div class="tech-item">
+                    <h3>フロントエンド</h3>
+                    <p>ES2022+、sqlite-wasm、lightweight-charts</p>
+                </div>
+                <div class="tech-item">
+                    <h3>インフラ</h3>
+                    <p>GitHub Actions、GitHub Pages、Git LFS</p>
+                </div>
+                <div class="tech-item">
+                    <h3>データソース</h3>
+                    <p>EDINET XBRL、Yahoo Finance</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="status">
+            <h2>システムステータス</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">データ更新</div>
+                    <div class="status-value" id="lastUpdate">読込中...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">解析銘柄数</div>
+                    <div class="status-value" id="companyCount">-</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">割安株数</div>
+                    <div class="status-value" id="undervaluedCount">-</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">マーケット状態</div>
+                    <div class="status-value" id="marketStatus">正常</div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 株式分析システム | GitHub: <a href="https://github.com/J1921604/stock-analysis" target="_blank">J1921604/stock-analysis</a></p>
+    </footer>
+    
+    <script>
+        // ハンバーガーメニュー
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+        
+        // システムステータス更新（仮データ）
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('ja-JP');
+        document.getElementById('companyCount').textContent = '2社';
+        document.getElementById('undervaluedCount').textContent = '準備中';
+        document.getElementById('marketStatus').textContent = '正常';
+    </script>
+</body>
+</html>

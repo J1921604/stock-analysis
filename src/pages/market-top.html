@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マーケット天井検出 | 株式分析システム</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">📊 株式分析システム</div>
+            <button class="hamburger" aria-label="メニュー" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html">ホーム</a></li>
+                <li><a href="netnet.html">NetNetPBR</a></li>
+                <li><a href="oneil.html">オニール</a></li>
+                <li><a href="market-top.html" class="active">マーケット天井</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <h1>マーケット天井検出</h1>
+            <p class="subtitle">分配日カウントによる市場リスク判定</p>
+            <p class="description">
+                オニール・リバモアの手法に基づき、分配日（Distribution Day）をカウントし、<br>
+                市場の天井圏到達を検出します。5回以上で警告を発します。
+            </p>
+        </section>
+        
+        <section class="tech-stack">
+            <h2>分配日検出ロジック</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h3>Step 1: 下落判定</h3>
+                    <p>TOPIX終値が前日比-0.2%以上下落</p>
+                </div>
+                <div class="tech-item">
+                    <h3>Step 2: 出来高判定</h3>
+                    <p>出来高が前日比+10%以上増加</p>
+                </div>
+                <div class="tech-item">
+                    <h3>Step 3: カウント集計</h3>
+                    <p>過去25営業日間の分配日をカウント</p>
+                </div>
+                <div class="tech-item">
+                    <h3>Step 4: 警告判定</h3>
+                    <p>5回以上で「天井警告」、4回以下で「正常」</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="status">
+            <h2>現在の市場状態</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">分配日カウント（25営業日）</div>
+                    <div class="status-value" id="distCount" style="color: var(--success);">0回</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">市場判定</div>
+                    <div class="status-value" id="marketStatus" style="color: var(--success);">正常</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">最終更新</div>
+                    <div class="status-value" id="lastUpdate" style="font-size: 1.2rem;">-</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">TOPIX（直近）</div>
+                    <div class="status-value" id="topixClose" style="font-size: 1.2rem;">-</div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="status">
+            <h2>分配日履歴（過去25営業日）</h2>
+            <div id="historyContainer">
+                <p style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    データベース読込中...
+                </p>
+            </div>
+        </section>
+        
+        <section class="tech-stack">
+            <h2>リバモア・オニールの市場分析</h2>
+            <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">
+                「大口投資家が売り抜けるとき、市場は下落し出来高が増える。これが分配日である」
+            </p>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h3>早期警告システム</h3>
+                    <p>大口売りを検出し、暴落前に警告を発する</p>
+                </div>
+                <div class="tech-item">
+                    <h3>25営業日ウィンドウ</h3>
+                    <p>過去1ヶ月間の分配日を追跡し、短期リスクを評価</p>
+                </div>
+                <div class="tech-item">
+                    <h3>5回ルール</h3>
+                    <p>5回以上で市場天井と判定（統計的優位性）</p>
+                </div>
+                <div class="tech-item">
+                    <h3>ポジション縮小</h3>
+                    <p>天井警告時は保有株を減らし、現金比率を高める</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 株式分析システム | GitHub: <a href="https://github.com/J1921604/stock-analysis" target="_blank">J1921604/stock-analysis</a></p>
+    </footer>
+    
+    <script>
+        // ハンバーガーメニュー
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+        
+        // データベース読込（仮実装）
+        setTimeout(() => {
+            document.getElementById('distCount').textContent = '0回';
+            document.getElementById('marketStatus').textContent = '正常';
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('ja-JP');
+            document.getElementById('topixClose').textContent = 'データなし';
+            
+            document.getElementById('historyContainer').innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>TOPIX終値</th>
+                            <th>前日比（%）</th>
+                            <th>出来高</th>
+                            <th>出来高増減（%）</th>
+                            <th>分配日</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                TOPIXデータがありません。<br>
+                                データパイプラインを実行してください。
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }, 500);
+    </script>
+</body>
+</html>

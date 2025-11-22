@@ -23,3 +23,24 @@
 *.zip binary
 *.exe binary
 *.dll binary
+
+# Git LFS設定 - 大容量ファイル管理
+# SQLiteデータベース（50MB）
+*.db filter=lfs diff=lfs merge=lfs -text
+data/db/*.db filter=lfs diff=lfs merge=lfs -text
+
+# Brotli圧縮データベース（10-15MB）
+*.db.br filter=lfs diff=lfs merge=lfs -text
+src/*.db.br filter=lfs diff=lfs merge=lfs -text
+
+# XBRLファイル（ZIP形式、数MB/ファイル）
+data/raw/xbrl/*.zip filter=lfs diff=lfs merge=lfs -text
+
+# 株価CSVファイル（大量銘柄時）
+data/raw/prices/*.csv filter=lfs diff=lfs merge=lfs -text
+
+# 解析結果CSVファイル
+data/analysis/*.csv filter=lfs diff=lfs merge=lfs -text
+
+# PDFファイル
+*.pdf filter=lfs diff=lfs merge=lfs -text
