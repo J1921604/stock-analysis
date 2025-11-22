@@ -102,9 +102,14 @@ flowchart TB
 
 #### 1. キー取得
 
-1. EDINET APIポータル: https://disclosure2.edinet-fsa.go.jp/WZEK0020.aspx
-2. 「Subscription Key申込」から無料登録
-3. メールでキーが即時送付される
+1. **EDINET APIポータル**: https://disclosure2.edinet-fsa.go.jp/WEEK0010.aspx
+2. 「Subscription Key申込」ボタンをクリック
+3. 利用規約に同意してメールアドレスを入力
+4. メールで32文字の英数字キーが即時送付される（件名: 【EDINET】Subscription Key発行のお知らせ）
+
+**参考資料**:
+- API仕様書: https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/WZEK0110.html
+- 利用ガイド(PDF): https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/download/ESE140206.pdf
 
 #### 2. GitHub Secretsに登録
 
@@ -114,7 +119,7 @@ Settings → Secrets and variables → Actions → New repository secret
 
 # Secret設定:
 Name: EDINET_API_KEY
-Value: (メールで受け取ったキー)
+Value: (メールで受け取った32文字のキー、引用符不要)
 ```
 
 #### 3. ローカル環境設定
@@ -123,8 +128,8 @@ Value: (メールで受け取ったキー)
 # .env.example をコピー
 cp .env.example .env
 
-# エディタで .env を編集
-# EDINET_API_KEY=your_subscription_key_here
+# エディタで .env を編集し、キーをそのまま記載（引用符不要）
+# EDINET_API_KEY=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
 ```
 
 ### 1. リポジトリクローン
@@ -425,7 +430,7 @@ def download_xbrl(doc_id):
 |-------------|--------|
 | **完全実装仕様書** | [docs/完全仕様書.md](https://github.com/J1921604/stock-analysis/blob/main/docs/完全仕様書.md) |
 | **要件定義書** | [specs/001-stock-analysis-system/checklists/requirements.md](https://github.com/J1921604/stock-analysis/blob/main/specs/001-stock-analysis-system/checklists/requirements.md) |
-| **実装計画書** | [specs/001-stock-analysis-system/plan.md](https://github.com/J1921604/stock-analysis/blob/main/specs/001-stock-analysis-system/plan.md) |
+| **実装計画書** | [specs/feature/impl-001-stock-analysis-system/plan.md](https://github.com/J1921604/stock-analysis/blob/main/specs/feature/impl-001-stock-analysis-system/plan.md) |
 | **開発憲法** | [.specify/memory/constitution.md](https://github.com/J1921604/stock-analysis/blob/main/.specify/memory/constitution.md) |
 
 ---
