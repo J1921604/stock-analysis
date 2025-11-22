@@ -21,7 +21,11 @@ if (Test-Path ".\venv\Scripts\Activate.ps1") {
 } else {
     Write-Host "[1/4] 仮想環境が見つかりません。新規作成中..." -ForegroundColor Yellow
     python -m venv venv
-    & .\venv\Scripts\Activate.ps1
+    if (Test-Path ".\venv\Scripts\Activate.ps1") {
+        & .\venv\Scripts\Activate.ps1
+    } else {
+        Write-Host "警告: 仮想環境の作成に失敗しました。グローバルPythonを使用します。" -ForegroundColor Red
+    }
 }
 
 # 2. 依存関係のインストール

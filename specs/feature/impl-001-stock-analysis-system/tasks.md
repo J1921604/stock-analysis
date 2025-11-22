@@ -133,12 +133,12 @@ flowchart TB
 
 **共通タスク（全User Storyの前提条件）**:
 
-- [ ] T007 [P] scripts/fetch_xbrl.py 実装（EDINET API v2、tepco/chubu/jera対象、1秒/1ファイルレート制限）
-- [ ] T008 [P] tests/test_fetch_xbrl.py 実装（EDINET APIモック、3社取得成功確認）
-- [ ] T009 [P] scripts/fetch_prices.py 実装（yfinance、9501.T/9502.T、インクリメンタル更新）
-- [ ] T010 [P] tests/test_fetch_prices.py 実装（株価取得テスト、日次データ確認）
-- [ ] T011 [P] scripts/parse_xbrl.py 実装（lxml、<1秒/ファイル、売上高/営業利益/純資産抽出）
-- [ ] T012 [P] tests/test_parse_xbrl.py 実装（XBRLパーステスト、財務3表抽出確認）
+- [x] T007 [P] scripts/fetch_xbrl.py 実装（EDINET API v2、tepco/chubu/jera対象、1秒/1ファイルレート制限）
+- [x] T008 [P] tests/test_fetch_xbrl.py 実装（EDINET APIモック、3社取得成功確認）
+- [x] T009 [P] scripts/fetch_prices.py 実装（yfinance、9501.T/9502.T、インクリメンタル更新）
+- [x] T010 [P] tests/test_fetch_prices.py 実装（株価取得テスト、日次データ確認）
+- [x] T011 [P] scripts/parse_xbrl.py 実装（lxml、<1秒/ファイル、売上高/営業利益/純資産抽出）
+- [x] T012 [P] tests/test_parse_xbrl.py 実装（XBRLパーステスト、財務3表抽出確認）
 
 ---
 

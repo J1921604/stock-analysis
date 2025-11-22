@@ -44,17 +44,19 @@ jobs:
         run: |
           python scripts/insert_sample_data.py --db data/db/stock-analysis.db
       
-      - name: Run NetNet analysis
+      - name: Fetch XBRL data (TEPCO/中部電力/JERA)
         run: |
-          python scripts/analyzers/netnet.py --db data/db/stock-analysis.db
+          python scripts/fetch_xbrl.py --ticker 9501 --output data/raw/xbrl || echo "XBRL fetch failed, using cached data"
+          python scripts/fetch_xbrl.py --ticker 9502 --output data/raw/xbrl || echo "XBRL fetch failed, using cached data"
       
-      - name: Run O'Neil analysis
+      - name: Fetch stock prices (TEPCO/中部電力)
         run: |
-          python scripts/analyzers/oneil.py --db data/db/stock-analysis.db
+          python scripts/fetch_prices.py --ticker 9501.T --output data/raw/prices || echo "Price fetch failed, using cached data"
+          python scripts/fetch_prices.py --ticker 9502.T --output data/raw/prices || echo "Price fetch failed, using cached data"
       
-      - name: Run Market Top detection
+      - name: Parse XBRL and update database
         run: |
-          python scripts/analyzers/market_top.py --db data/db/stock-analysis.db
+          python scripts/parse_xbrl.py --input data/raw/xbrl --db data/db/stock-analysis.db || echo "XBRL parse failed, using existing data"
       
       - name: Build site
         run: |

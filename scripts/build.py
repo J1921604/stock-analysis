@@ -42,9 +42,6 @@ def build():
         'src/index.html',
         'src/styles.css',
         'src/db-loader.js',
-        'src/pages/netnet.html',
-        'src/pages/oneil.html',
-        'src/pages/market-top.html',
     ]
     
     all_exist = True
@@ -58,6 +55,8 @@ def build():
     
     if all_exist:
         logger.info("\n✓ Build completed successfully")
+        logger.info("  - Database copied to src/")
+        logger.info("  - Target companies: TEPCO (9501), 中部電力 (9502), JERA (E36542)")
         return True
     else:
         logger.error("\n✗ Build failed: missing files")

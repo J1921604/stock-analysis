@@ -542,6 +542,8 @@ flowchart LR
 
 ### GP-002: ブランチ戦略
 **原則**: 仕様と実装はブランチで分離する  
+**詳細**: ブランチフロー図とタグ戦略は [plan.md](https://github.com/J1921604/stock-analysis/blob/main/specs/feature/impl-001-stock-analysis-system/plan.md#ブランチフロー図) を参照
+
 **実装**:
 ```bash
 # 仕様ブランチ（mainから派生）
@@ -566,41 +568,6 @@ examples:
   - "feature/impl-001-xbrl-parser"
   - "fix/002-memory-leak"
   - "docs/003-deployment-guide"
-```
-
-**ブランチフロー図（Mermaid v11対応）**:
-```mermaid
-flowchart TB
-    subgraph "メインブランチ"
-        M[main]
-    end
-    
-    subgraph "仕様ブランチ"
-        S1[spec/001-stock-analysis]
-        S2[spec/002-dashboard-ui]
-    end
-    
-    subgraph "実装ブランチ"
-        F1[feature/impl-001-xbrl-parser]
-        F2[feature/impl-001-price-fetcher]
-        F3[feature/impl-002-chart-component]
-    end
-    
-    M -->|派生| S1
-    M -->|派生| S2
-    S1 -->|派生| F1
-    S1 -->|派生| F2
-    S2 -->|派生| F3
-    F1 -->|マージ| S1
-    F2 -->|マージ| S1
-    S1 -->|レビュー承認後| M
-    
-    style M fill:#e1bee7
-    style S1 fill:#ce93d8
-    style S2 fill:#ce93d8
-    style F1 fill:#c8e6c9
-    style F2 fill:#c8e6c9
-    style F3 fill:#c8e6c9
 ```
 
 ### GP-003: レビュー承認
