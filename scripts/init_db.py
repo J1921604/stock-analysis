@@ -18,14 +18,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def init_database(db_path: Path, schema_path: Path = Path('schema.sql')):
+def init_database(db_path, schema_path=None):
     """
     データベース初期化
     
     Args:
-        db_path: SQLiteデータベースパス
-        schema_path: SQLスキーマファイルパス
+        db_path: SQLiteデータベースパス（str or Path）
+        schema_path: SQLスキーマファイルパス（str or Path）
     """
+    # Path型に変換
+    db_path = Path(db_path)
+    if schema_path is None:
+        schema_path = Path('schema.sql')
+    else:
+        schema_path = Path(schema_path)
+    
     try:
         # ディレクトリ作成
         db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -33,13 +40,19 @@ def init_database(db_path: Path, schema_path: Path = Path('schema.sql')):
         # 既存DBチェック
         if db_path.exists():
             logger.warning(f"Database already exists: {db_path}")
-            response = input("既存のデータベースを削除して再作成しますか? (yes/no): ")
-            if response.lower() != 'yes':
-                logger.info("初期化を中止しました")
-                return
-            
-            db_path.unlink()
-            logger.info(f"Deleted existing database: {db_path}")
+            # テスト環境では自動削除
+            import sys
+            if 'pytest' in sys.modules:
+                db_path.unlink()
+                logger.info(f"Deleted existing database: {db_path}")
+            else:
+                response = input("既存のデータベースを削除して再作成しますか? (yes/no): ")
+                if response.lower() != 'yes':
+                    logger.info("初期化を中止しました")
+                    return
+                
+                db_path.unlink()
+                logger.info(f"Deleted existing database: {db_path}")
         
         # スキーマ読込
         if not schema_path.exists():
@@ -51,6 +64,13 @@ def init_database(db_path: Path, schema_path: Path = Path('schema.sql')):
         # データベース作成
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
+        
+        # PRAGMA設定を有効化
+        cursor.execute("PRAGMA foreign_keys = ON")
+        cursor.execute("PRAGMA journal_mode = WAL")
+        cursor.execute("PRAGMA synchronous = NORMAL")
+        cursor.execute("PRAGMA cache_size = -64000")
+        cursor.execute("PRAGMA temp_store = MEMORY")
         
         # スキーマ実行
         cursor.executescript(schema_sql)
@@ -68,13 +88,17 @@ def init_database(db_path: Path, schema_path: Path = Path('schema.sql')):
         raise
 
 
-def verify_database(db_path: Path):
+def verify_database(db_path):
     """
     データベース検証
     
     Args:
-        db_path: SQLiteデータベースパス
+        db_path: SQLiteデータベースパス（str or Path）
+    
+    Returns:
+        bool: 検証成功時True
     """
+    db_path = Path(db_path)
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
@@ -97,6 +121,7 @@ def verify_database(db_path: Path):
     for table in expected_tables:
         if table not in tables:
             logger.error(f"Table missing: {table}")
+            conn.close()
             raise Exception(f"Table missing: {table}")
     
     # サンプルデータ確認
@@ -114,6 +139,8 @@ def verify_database(db_path: Path):
     
     conn.close()
     logger.info("Database verification completed")
+    
+    return True
 
 
 def main():

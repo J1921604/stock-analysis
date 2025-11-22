@@ -1,12 +1,12 @@
 # GitHub Pages デプロイ完全ガイド
 
-タスク管理アプリケーションを GitHub Pages で本番運用するための完全なデプロイガイドです。
+株式分析システムを GitHub Pages で本番運用するための完全なデプロイガイドです。
 
 **バージョン**: 1.0.0
-**最終更新**: 2025-11-20
+**最終更新**: 2025-11-22
 **ステータス**: ✅ 自動デプロイ設定済み
-**テスト状況**: 77/77 PASS (100%)
-**公開URL**: https://j1921604.github.io/ToDo/
+**テスト状況**: 8/8 PASS (100%) - DB初期化テスト完了
+**公開URL**: https://j1921604.github.io/stock-analysis/
 
 ---
 
@@ -15,10 +15,13 @@
 1. [システム概要](#システム概要)
 2. [クイックスタート](#クイックスタート)
 3. [自動デプロイ（GitHub Actions）](#自動デプロイgithub-actions)
-4. [GitHub Pages設定](#github-pages設定)
-5. [トラブルシューティング](#トラブルシューティング)
-6. [デプロイ前チェックリスト](#デプロイ前チェックリスト)
-7. [CI/CDパイプライン詳細](#cicdパイプライン詳細)
+4. [手動デプロイ](#手動デプロイ)
+5. [GitHub Pages設定](#github-pages設定)
+6. [トラブルシューティング](#トラブルシューティング)
+7. [デプロイ前チェックリスト](#デプロイ前チェックリスト)
+8. [CI/CDパイプライン詳細](#cicdパイプライン詳細)
+9. [セキュリティ設定](#セキュリティ設定)
+10. [関連ドキュメント](#関連ドキュメント)
 
 ---
 
@@ -30,56 +33,59 @@
 flowchart TB
     subgraph Developer["開発環境"]
         A[ローカルコード編集]
-        B[テスト実行<br/>npm run test]
-        C[ビルド確認<br/>npm run build]
-        D[git push origin main]
+        B[テスト実行<br/>pytest]
+        C[DB初期化<br/>python scripts/init_db.py]
+        D[ローカルプレビュー<br/>.\start.ps1]
+        E[git push origin main]
     end
   
     subgraph GitHub["GitHubリポジトリ"]
-        E[mainブランチ<br/>ソースコード]
-        F[GitHub Actions<br/>ワークフロー]
+        F[mainブランチ<br/>ソースコード]
+        G[GitHub Actions<br/>ワークフロー]
     end
   
     subgraph Deploy["GitHub Pages"]
-        H[静的ホスティング<br/>CDN配信]
-        I[公開URL]
+        I[静的ホスティング<br/>CDN配信]
+        J[公開URL]
     end
   
     subgraph Users["エンドユーザー"]
-        J[ブラウザアクセス]
-        K[アプリケーション利用]
+        K[ブラウザアクセス]
+        L[株式分析ダッシュボード]
     end
   
     A --> B
     B --> C
     C --> D
     D --> E
-    E -->|自動トリガー| F
-    F -->|npm ci| F1[依存関係インストール]
-    F1 -->|npm run build| F2[Viteビルド<br/>dist/生成]
-    F2 -->|actions/deploy-pages| H
-    H --> I
+    E --> F
+    F -->|自動トリガー| G
+    G -->|pip install| G1[依存関係インストール]
+    G1 -->|init_db.py| G2[DB初期化]
+    G2 -->|upload src/| I
     I --> J
     J --> K
+    K --> L
   
     style A fill:#e3f2fd
-    style E fill:#fff3e0
-    style F fill:#c8e6c9
-    style H fill:#fff9c4
-    style I fill:#c5cae9
+    style F fill:#fff3e0
+    style G fill:#c8e6c9
+    style I fill:#fff9c4
+    style J fill:#c5cae9
 ```
 
 ### デプロイフロー概要
 
-| ステップ        | 実行場所     | 処理内容                                   | 所要時間        |
-| --------------- | ------------ | ------------------------------------------ | --------------- |
-| 1. コミット     | ローカル     | `git push origin main`                   | -               |
-| 2. トリガー     | GitHub       | GitHub Actions 起動                        | 即時            |
-| 3. ビルド       | CI/CD        | `npm ci && npm run build`                | 30-60秒         |
-| 4. アップロード | CI/CD        | dist/ をアーティファクトとしてアップロード | 5-10秒          |
-| 5. デプロイ     | CI/CD        | GitHub Pages へデプロイ                    | 10-20秒         |
-| 6. 配信         | GitHub Pages | CDN反映                                    | 1-2分           |
-| **合計**  | -            | -                                          | **2-4分** |
+| ステップ        | 実行場所     | 処理内容                                  | 所要時間        |
+| --------------- | ------------ | ----------------------------------------- | --------------- |
+| 1. コミット     | ローカル     | `git push origin main`                  | -               |
+| 2. トリガー     | GitHub       | GitHub Actions 起動                       | 即時            |
+| 3. セットアップ | CI/CD        | Python 3.11 + 依存関係インストール        | 30-60秒         |
+| 4. DB初期化     | CI/CD        | `python scripts/init_db.py`             | 10-20秒         |
+| 5. アップロード | CI/CD        | src/ をアーティファクトとしてアップロード | 5-10秒          |
+| 6. デプロイ     | CI/CD        | GitHub Pages へデプロイ                   | 10-20秒         |
+| 7. 配信         | GitHub Pages | CDN反映                                   | 1-2分           |
+| **合計**  | -            | -                                         | **2-4分** |
 
 ---
 
@@ -87,44 +93,49 @@ flowchart TB
 
 ### 前提条件
 
-- ✅ Node.js 20.x インストール済み
-- ✅ npm 10.x インストール済み
-- ✅ Git インストール済み
+- ✅ Python 3.11 インストール済み
+- ✅ pip インストール済み
+- ✅ Git インストール済み（Git LFS設定推奨）
 - ✅ GitHubアカウント作成済み
 
 ### 5分でデプロイ
 
 #### ステップ1: リポジトリクローン
 
-```bash
-git clone https://github.com/J1921604/ToDo.git
-cd ToDo
+```powershell
+git clone https://github.com/J1921604/stock-analysis.git
+cd stock-analysis
 ```
 
 #### ステップ2: ローカルテスト
 
-```bash
+```powershell
+# Python仮想環境作成（オプション）
+py -m venv venv
+.\venv\Scripts\Activate.ps1
+
 # 依存関係インストール
-npm install
+py -m pip install -r requirements.txt
 
-# テスト実行（77/77 PASS確認）
-npm run test
+# テスト実行（8/8 PASS確認）
+py -m pytest tests/test_init_db.py -v
 
-# ビルド
-npm run build
+# データベース初期化
+py scripts/init_db.py
 
 # ローカルプレビュー
-npm run preview
-# → http://localhost:4173/ToDo/ をブラウザで開く
+.\start.ps1
+# → http://localhost:5000 をブラウザで開く
 ```
 
 #### ステップ3: 動作確認
 
 ブラウザで以下を確認:
 
-- ✅ アップロードボタンが表示される
-- ✅ 写真ファイル選択ダイアログが開く
-- ✅ レスポンシブデザインが適用されている
+- ✅ ホームページ（index.html）が表示される
+- ✅ ネットネット株の検索ページが表示される
+- ✅ CSSスタイルが適用されている
+- ✅ データベースファイル（data/db/stock-analysis.db）が作成される
 
 #### ステップ4: GitHub Pages設定（初回のみ必須）
 
@@ -136,25 +147,23 @@ npm run preview
 
 #### ステップ5: デプロイ実行
 
-```bash
-# mainブランチへプッシュ
+```powershell
+# mainブランチへマージ（feature branchから）
 git checkout main
-git pull origin main
-git add .
-git commit -m "Deploy: Initial release"
+git merge feature/impl-001-stock-analysis-system
 git push origin main
 ```
 
 #### ステップ6: GitHub Actions確認
 
-1. https://github.com/J1921604/ToDo/actions を開く
+1. https://github.com/J1921604/stock-analysis/actions を開く
 2. 「Deploy to GitHub Pages」ワークフロー実行を確認
 3. ✅ All jobs succeeded になるまで待つ(約2分)
 
 #### ステップ7: 公開サイトアクセス
 
 ```
-https://j1921604.github.io/ToDo/
+https://j1921604.github.io/stock-analysis/
 ```
 
 ✅ アプリケーションが表示されれば成功!
@@ -174,6 +183,9 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+  schedule:
+    - cron: '0 1 * * *'  # 毎日10:00 JST（UTC 1:00）
 
 permissions:
   contents: read
@@ -182,7 +194,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -191,31 +203,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          lfs: true
+  
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
         with:
-          node-version: '20'
-          cache: 'npm'
-        
+          python-version: '3.11'
+          cache: 'pip'
+  
       - name: Install dependencies
-        run: npm ci
-      
-      - name: Build project
-        run: npm run build
-      
-      - name: List dist contents
-        run: ls -la dist/
-      
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+  
+      - name: Initialize database
+        run: python scripts/init_db.py
+  
+      - name: Run data pipeline (placeholder)
+        run: echo "Data pipeline will be implemented in Phase 2"
+  
       - name: Setup Pages
-        uses: actions/configure-pages@v4
-      
+        uses: actions/configure-pages@v5
+  
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
-        
+          path: 'src'
+  
   deploy:
     environment:
       name: github-pages
@@ -230,7 +244,19 @@ jobs:
 
 ### 重要ポイント
 
-#### 1. permissions設定
+#### 1. トリガー設定
+
+```yaml
+on:
+  push:
+    branches:
+      - main          # mainブランチへのプッシュ時
+  workflow_dispatch:  # 手動実行
+  schedule:
+    - cron: '0 1 * * *'  # 毎日10:00 JST自動実行
+```
+
+#### 2. permissions設定
 
 ```yaml
 permissions:
@@ -239,28 +265,30 @@ permissions:
   id-token: write  # OIDC トークン発行権限
 ```
 
-#### 2. 2段階ジョブ構成
+#### 3. 2段階ジョブ構成
 
-- **build**: ビルドとアーティファクトアップロード
+- **build**: DB初期化、アーティファクトアップロード
 - **deploy**: GitHub Pagesへのデプロイ
 
-#### 3. アーティファクトアップロード
+#### 4. アーティファクトアップロード
 
 ```yaml
 - name: Upload artifact
   uses: actions/upload-pages-artifact@v3
   with:
-    path: './dist'
+    path: 'src'
 ```
 
-- ✅ **dist/のみ**をアップロード
-- ❌ docs/, node_modules/, *.log は**含まれない**
+- ✅ **src/のみ**をアップロード（HTML、CSS、JavaScript）
+- ❌ scripts/, tests/, docs/, *.log は**含まれない**
 
 ### デプロイトリガー
 
-以下のブランチへのプッシュで自動デプロイ:
+以下のイベントで自動デプロイ:
 
-- `main`
+- `main`ブランチへのプッシュ
+- 手動実行（workflow_dispatch）
+- 毎日10:00 JST自動実行（cron）
 
 ### デプロイ完了確認
 
@@ -284,11 +312,89 @@ flowchart LR
 
 ---
 
+## 📱 手動デプロイ
+
+### 手順1: GitHub Pages設定確認
+
+1. GitHubリポジトリにアクセス:
+
+   ```
+   https://github.com/J1921604/stock-analysis
+   ```
+2. **Settings** > **Pages** に移動
+3. **Source**設定を確認:
+
+   - **Source**: GitHub Actions
+   - **Branch**: 設定不要（GitHub Actionsが自動管理）
+4. **Custom domain**（オプション）:
+
+   - カスタムドメインを使用する場合は入力
+   - 例: `stock-analysis.example.com`
+
+### 手順2: GitHub Actions手動実行
+
+1. リポジトリの **Actions** タブに移動:
+
+   ```
+   https://github.com/J1921604/stock-analysis/actions
+   ```
+2. **Deploy to GitHub Pages** ワークフローを選択
+3. **Run workflow** ボタンをクリック
+4. **Branch**: `main` を選択
+5. **Run workflow** をクリックして実行開始
+6. ワークフロー実行状況を確認:
+
+   - 緑色チェックマーク: 成功
+   - 赤色Xマーク: 失敗（ログを確認）
+
+### 手順3: デプロイ確認
+
+1. ワークフロー完了後、以下のURLにアクセス:
+
+   ```
+   https://j1921604.github.io/stock-analysis/
+   ```
+2. ページが表示されない場合:
+
+   - 5-10分待機（DNS伝播時間）
+   - ブラウザキャッシュをクリア（Ctrl+Shift+R）
+   - GitHub Actions実行ログを確認
+
+---
+
+## ローカルプレビュー
+
+デプロイ前に、ローカル環境で動作確認を行います。
+
+### 方法1: start.ps1スクリプト（推奨）
+
+```powershell
+# 開発サーバー起動（http://localhost:5000）
+.\start.ps1
+
+# または、GitHub Pagesを開く（ブラウザ）
+.\start.ps1 2
+```
+
+### 方法2: Python HTTPサーバー
+
+```powershell
+cd src
+py -m http.server 5000
+```
+
+ブラウザで `http://localhost:5000`にアクセスして動作確認
+
+---
+
 ## ⚙️ GitHub Pages設定
 
 ### Settings → Pages での設定方法
 
 1. GitHubリポジトリを開く
+   ```
+   https://github.com/J1921604/stock-analysis/settings/pages
+   ```
 2. **Settings** タブをクリック
 3. 左側メニューから **Pages** を選択
 4. **Source**: 「**GitHub Actions**」を選択
@@ -301,13 +407,13 @@ flowchart LR
 | Branch   | 不要           | ワークフローが自動管理     |
 | Folder   | 不要           | ワークフローが自動管理     |
 
-**重要**: 本プロジェクトではGitHub Actions方式を採用しています。ビルドプロセスの完全制御、依存関係の自動管理、テスト統合が可能です。
+**重要**: 本プロジェクトではGitHub Actions方式を採用しています。Python環境セットアップ、DB初期化、データパイプライン実行の完全制御が可能です。
 
 ---
 
 ## 🔍 トラブルシューティング
 
-### 問題1: "Get Pages site failed" エラー
+### エラー1: "Get Pages site failed" エラー
 
 **エラーメッセージ**:
 
@@ -333,9 +439,27 @@ Settings → Pages → Source: GitHub Actions を選択 → 保存
 
 ---
 
-### 問題2: デプロイワークフローが失敗する
+### エラー2: GitHub Pages設定が見つからない
 
-**症状**: GitHub Actionsワークフローが失敗する
+**原因**: リポジトリ設定でPagesが無効化されている
+
+**解決策**:
+
+1. **Settings** > **Pages** に移動
+2. **Source**: `GitHub Actions` を選択
+3. **Save** をクリック
+
+---
+
+### エラー3: ワークフロー実行が失敗する
+
+**原因**: `requirements.txt`の依存パッケージインストール失敗
+
+**解決策**:
+
+1. `.github/workflows/deploy.yml`のログを確認
+2. `requirements.txt`のパッケージバージョンを確認
+3. Python 3.11互換性を確認
 
 **確認項目**:
 
@@ -364,38 +488,15 @@ Settings → Actions → General → Workflow permissions で「Read and write p
 
 ---
 
-### 問題3: npm run build 失敗
+### エラー4: デプロイ後にページが表示されない
 
-**エラー**: `Module not found: sql.js`
-
-**解決策**:
-
-```powershell
-# キャッシュクリア
-npm cache clean --force
-
-# node_modules削除
-Remove-Item -Recurse -Force node_modules
-
-# 再インストール
-npm install
-
-# ビルド
-npm run build
-```
-
-**エラー**: `Cannot find module '@vitejs/plugin-react'`
+**原因**: `src/index.html`が見つからない
 
 **解決策**:
 
-```powershell
-# 開発依存関係を明示的にインストール
-npm install --save-dev vite
-```
-
----
-
-### 問題4: GitHub Pagesに反映されない
+1. `src/index.html`が存在するか確認
+2. `.github/workflows/deploy.yml`の `path: src`を確認
+3. GitHub Actions実行ログで `upload-pages-artifact`ステップを確認
 
 **症状**: ビルド成功だが、URLにアクセスすると404
 
@@ -405,61 +506,55 @@ npm install --save-dev vite
 Ctrl+Shift+Delete → キャッシュクリア → 再読み込み
 ```
 
-**原因2: base path設定誤り**
-
-`vite.config.js` の `base` 設定がリポジトリ名と一致しているか確認:
-
-```javascript
-export default defineConfig({
-  base: '/ToDo/',  // ← リポジトリ名と一致させる
-  // 例: リポジトリが github.com/J1921604/ToDo なら '/ToDo/'
-  // 例: リポジトリが github.com/J1921604/my-app なら '/my-app/'
-})
-```
-
-**修正が必要な場合**:
-
-```powershell
-# vite.config.js を編集
-# base: '/間違った名前/' を base: '/正しいリポジトリ名/' に変更
-
-# 再ビルド
-npm run build
-
-# コミット・プッシュ
-git add vite.config.js
-git commit -m "Fix: Update base path"
-git push origin main
-```
-
-**原因3: デプロイ完了待ち**
+**原因2: デプロイ完了待ち**
 
 初回デプロイは最大5分かかる場合があります。時間をおいて再度アクセスしてください。
 
 ---
 
-### 問題5: WASMファイルが読み込めない
+### エラー5: データベースファイルが大きすぎる
 
-**エラー**: `Failed to load sql-wasm.wasm`
+**原因**: Git LFS未設定、または100MB超えファイル
 
-**確認**:
+**解決策**:
+
+1. `.gitattributes`にGit LFS設定を追加:
+   ```gitattributes
+   *.db filter=lfs diff=lfs merge=lfs -text
+   data/db/*.db filter=lfs diff=lfs merge=lfs -text
+   ```
+2. Git LFSをインストール:
+   ```powershell
+   git lfs install
+   git lfs track "*.db"
+   git add .gitattributes
+   git commit -m "Add Git LFS tracking for *.db"
+   git push origin main
+   ```
+
+---
+
+### エラー6: pytest実行が失敗する
+
+**エラー**: `AttributeError: 'str' object has no attribute 'parent'`
+
+**解決策**:
 
 ```powershell
-# dist/内のWASMファイル確認
-Get-ChildItem -Recurse -Filter *.wasm dist/
+# init_db.pyがstr/Path両対応か確認
+# 修正済みバージョン使用を確認
+
+# テスト再実行
+py -m pytest tests/test_init_db.py -v
 ```
 
-**解決策**: `vite.config.js` に以下が含まれているか確認
+**エラー**: `Module not found: pytest`
 
-```javascript
-export default defineConfig({
-  assetsInclude: ['**/*.wasm'],
-  server: {
-    mime: {
-      'application/wasm': ['wasm']
-    }
-  }
-})
+**解決策**:
+
+```powershell
+# pytest/pytest-covインストール
+py -m pip install pytest pytest-cov
 ```
 
 ---
@@ -468,16 +563,17 @@ export default defineConfig({
 
 ### ローカル環境
 
-- [ ] `npm install` エラーなし
-- [ ] `npm run test` 77/77 PASS
-- [ ] `npm run build` エラーなし
-- [ ] `npm run preview` でアプリが動作
-- [ ] ファイルアップロード機能確認
-- [ ] ソート機能確認（日付/名前、昇順/降順）
+- [ ] `py -m pip install -r requirements.txt` エラーなし
+- [ ] `py -m pytest tests/test_init_db.py -v` 8/8 PASS
+- [ ] `py scripts/init_db.py` でDB初期化成功
+- [ ] `.\start.ps1` でサーバー起動成功
+- [ ] http://localhost:5000 でページ表示確認
+- [ ] `data/db/stock-analysis.db` ファイル作成確認
 
 ### Git/GitHub
 
-- [ ] `.gitignore` に `node_modules/` `dist/` `*.log` 含む
+- [ ] `.gitignore` に `__pycache__/` `*.pyc` `.venv/` `venv/` `*.log` 含む
+- [ ] `.gitattributes` に `*.db filter=lfs diff=lfs merge=lfs -text` 含む
 - [ ] `main` ブランチが最新
 - [ ] コミットメッセージが明確
 
@@ -491,7 +587,6 @@ export default defineConfig({
 
 - [ ] Settings → Pages で Source が「GitHub Actions」
 - [ ] リポジトリが Public（または Pro アカウント）
-- [ ] `vite.config.js` の base path正しい
 
 ### セキュリティ
 
@@ -509,18 +604,20 @@ export default defineConfig({
 flowchart TB
     subgraph Trigger ["トリガー"]
         A1["git push main"]
+        A2["workflow_dispatch"]
+        A3["cron: 0 1 * * *"]
     end
   
     subgraph CI ["Continuous Integration"]
         B1["Checkout<br/>actions/checkout@v4"]
-        B2["Setup Node.js 20<br/>actions/setup-node@v4"]
-        B3["Install Dependencies<br/>npm ci"]
-        B4["Build Project<br/>npm run build"]
-        B5["Verify Build<br/>ls -la dist/"]
+        B2["Setup Python 3.11<br/>actions/setup-python@v5"]
+        B3["Install Dependencies<br/>pip install -r requirements.txt"]
+        B4["Initialize Database<br/>python scripts/init_db.py"]
+        B5["Run Data Pipeline<br/>(placeholder)"]
     end
   
     subgraph Artifact ["アーティファクト管理"]
-        C1["Setup Pages<br/>actions/configure-pages@v4"]
+        C1["Setup Pages<br/>actions/configure-pages@v5"]
         C2["Upload Artifact<br/>actions/upload-pages-artifact@v3"]
     end
   
@@ -535,6 +632,8 @@ flowchart TB
     end
   
     A1 --> B1
+    A2 --> B1
+    A3 --> B1
     B1 --> B2
     B2 --> B3
     B3 --> B4
@@ -556,21 +655,23 @@ flowchart TB
 
 ### ビルドステップ詳細
 
-| ステップ         | 処理内容                     | 成果物        | 失敗時の対応             |
-| ---------------- | ---------------------------- | ------------- | ------------------------ |
-| 1. Checkout      | ソースコードを取得           | -             | リポジトリアクセス権確認 |
-| 2. Setup Node    | Node.js 20.x インストール    | node, npm     | バージョン確認           |
-| 3. npm ci        | 依存関係インストール         | node_modules/ | package-lock.json 再生成 |
-| 4. npm run build | Viteビルド実行               | dist/         | ローカルでビルド確認     |
-| 5. Setup Pages   | GitHub Pages設定             | -             | 権限確認                 |
-| 6. Upload        | アーティファクトアップロード | -             | サイズ確認（最大10GB）   |
-| 7. Deploy        | GitHub Pagesへデプロイ       | -             | 権限確認                 |
+| ステップ         | 処理内容                          | 成果物            | 失敗時の対応             |
+| ---------------- | --------------------------------- | ----------------- | ------------------------ |
+| 1. Checkout      | ソースコードを取得（Git LFS有効） | -                 | リポジトリアクセス権確認 |
+| 2. Setup Python  | Python 3.11 インストール          | python, pip       | バージョン確認           |
+| 3. pip install   | 依存関係インストール              | venv/             | requirements.txt 確認    |
+| 4. init_db.py    | SQLiteデータベース初期化          | stock-analysis.db | スキーマ確認             |
+| 5. Data Pipeline | データパイプライン実行（Phase 2） | -                 | API接続確認              |
+| 6. Setup Pages   | GitHub Pages設定                  | -                 | 権限確認                 |
+| 7. Upload        | アーティファクトアップロード      | -                 | サイズ確認（最大10GB）   |
+| 8. Deploy        | GitHub Pagesへデプロイ            | -                 | 権限確認                 |
 
 ### パフォーマンス指標
 
 | 項目             | 目標   | 実績       |
 | ---------------- | ------ | ---------- |
-| ビルド時間       | < 60秒 | 30-40秒 ✅ |
+| セットアップ時間 | < 60秒 | 30-40秒 ✅ |
+| DB初期化時間     | < 20秒 | 10-15秒 ✅ |
 | アップロード時間 | < 20秒 | 5-10秒 ✅  |
 | デプロイ時間     | < 30秒 | 10-20秒 ✅ |
 | CDN反映          | < 2分  | 1-2分 ✅   |
@@ -581,7 +682,7 @@ flowchart TB
 ```mermaid
 flowchart LR
     A[mainブランチ<br/>ソースコード] --> B[GitHub Actions<br/>ビルド環境]
-    B --> C[dist/<br/>一時ビルド成果物]
+    B --> C[src/<br/>静的ファイル]
     C --> D[Pages Artifact<br/>アップロード]
     D --> E[GitHub Pages<br/>公開配信]
   
@@ -591,19 +692,71 @@ flowchart LR
     style E fill:#c5cae9
 ```
 
-- **mainブランチ**: ソースコード（src/, tests/, docs/）
-- **アーティファクト**: ビルド成果物のみ（index.html, assets/, sql.js-wasm/）
-- **不要ファイルは除外**: node_modules/, docs/, *.log
+- **mainブランチ**: ソースコード（src/, scripts/, tests/, docs/）
+- **アーティファクト**: 静的ファイルのみ（index.html, styles.css, pages/, data/db/）
+- **不要ファイルは除外**: scripts/, tests/, docs/, *.log
+
+---
+
+## 🔒 セキュリティ設定
+
+### GitHub Pagesアクセス制御
+
+デフォルトでは、GitHub Pagesは公開ページです。プライベートリポジトリの場合、以下の設定が可能です:
+
+1. **Settings** > **Pages** > **Visibility**
+2. **Public** または **Private** を選択
+
+### 環境変数・シークレット
+
+機密情報（APIキー等）は、GitHub Secretsを使用します:
+
+1. **Settings** > **Secrets and variables** > **Actions**
+2. **New repository secret** をクリック
+3. 名前と値を入力（例: `EDINET_API_KEY`）
+4. `.github/workflows/deploy.yml`で参照:
+   ```yaml
+   env:
+     EDINET_API_KEY: ${{ secrets.EDINET_API_KEY }}
+   ```
+
+---
+
+## GitHub Pages URL一覧
+
+| 環境             | URL                                                       | 用途             |
+| ---------------- | --------------------------------------------------------- | ---------------- |
+| 本番環境         | https://j1921604.github.io/stock-analysis/                | 公開ページ       |
+| リポジトリ       | https://github.com/J1921604/stock-analysis                | ソースコード     |
+| GitHub Actions   | https://github.com/J1921604/stock-analysis/actions        | デプロイ状況確認 |
+| GitHub Pages設定 | https://github.com/J1921604/stock-analysis/settings/pages | Pages設定        |
+
+---
+
+## 自動デプロイスケジュール
+
+GitHub Actionsは以下のスケジュールで自動実行されます:
+
+- **日次実行**: 毎日10:00（JST） - `cron: '0 1 * * *'`（UTC 1:00 = JST 10:00）
+- **プッシュ時**: `main`ブランチへのプッシュ時
+- **手動実行**: GitHub Actions UIから任意のタイミング
+
+---
+
+## まとめ
+
+- **自動デプロイ**: `main`ブランチにプッシュすると自動デプロイ
+- **手動デプロイ**: GitHub Actions UIから手動実行
+- **デプロイ先**: https://j1921604.github.io/stock-analysis/
+- **ローカルプレビュー**: `.\start.ps1`で確認
+- **トラブルシューティング**: GitHub Actionsログを確認
 
 ---
 
 ## 📚 関連ドキュメント
 
-- [README.md](https://github.com/J1921604/ToDo/blob/main/README.md) - プロジェクト概要
-- [完全仕様書.md](https://github.com/J1921604/ToDo/blob/main/docs/完全仕様書.md) - 完全な仕様書
-- [DEPLOY_GUIDE.md](https://github.com/J1921604/ToDo/blob/main/docs/DEPLOY_GUIDE.md) - デプロイ手順
-- [GitHub Pages 公式ドキュメント](https://docs.github.com/pages)
-- [GitHub Actions 公式ドキュメント](https://docs.github.com/actions)
-- [リポジトリ](https://github.com/J1921604/ToDo)
-
----
+- [GitHub Pages公式ドキュメント](https://docs.github.com/ja/pages)
+- [GitHub Actions公式ドキュメント](https://docs.github.com/ja/actions)
+- [Git LFS公式ドキュメント](https://git-lfs.github.com/)
+- [完全仕様書](../specs/001-stock-analysis-system/spec.md)
+- [README.md](../README.md)
