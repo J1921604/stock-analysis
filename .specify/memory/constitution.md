@@ -2,21 +2,21 @@
 
 <!--
 Sync Impact Report:
-バージョン変更: 1.0.0 → 2.0.0
-変更理由: AI_inputフォルダ全ファイル分析に基づく包括的改訂（MAJOR版上げ）
-- プロジェクト特化原則の明確化（株式分析システム、データ駆動型開発）
+バージョン変更: 1.0.0（初版）
+変更理由: 電力3社（東京電力・中部電力・JERA）特化株式分析システム専用憲法
+- プロジェクト特化原則の明確化（電力業界データ駆動型開発）
 - GitHub中心アーキテクチャの具体化（Actions、Pages、Issues統合）
 - データ品質・トレーサビリティ原則の追加
 - ブランチ戦略の詳細化とMermaid図の強化
 - 電力業界特化指標の組み込み
 
-修正された原則:
-- QP-001-005: 既存品質原則を維持、株式分析特化例を追加
-- DP-001-004: 開発方針を拡充（SQLite管理、インクリメンタル更新）
-- 新規追加: DP-005データトレーサビリティ、DP-006自動分析通知
+核心原則:
+- QP-001-005: 品質原則（完全性重視、継続的改善、文字化け対策、テンプレート純化、TDD徹底）
+- DP-001-004: 開発方針（SQLite管理、インクリメンタル更新、Mermaid v11準拠、ドキュメント生成品質）
+- PS-001-005: プロジェクト固有原則（電力業界特化指標、JERA連結影響分析、データトレーサビリティ、自動分析通知）
 
 追加セクション:
-- プロジェクト固有原則（株式分析システム特化）
+- プロジェクト固有原則（電力業界特化）
 - データ収集・正規化原則
 - GitHub統合ガバナンス
 
@@ -24,15 +24,15 @@ Sync Impact Report:
 ✅ spec-template.md - User Stories優先順位付けと整合
 ✅ plan-template.md - Constitution Check整合性確認済み
 ✅ tasks-template.md - タスク分類（User Story別）整合性確認済み
-✅ エージェント固有参照なし（CLAUDE等削除済み）
+✅ エージェント固有参照なし
 
 遅延項目: なし（全プレースホルダー置換完了）
 -->
 
-**バージョン**: 2.0.0  
-**批准日**: 2025-11-22  
-**最終改訂**: 2025-11-22  
-**プロジェクト名**: stock-analysis（日本上場銘柄自動解析システム）  
+**バージョン**: 1.0.0  
+**批准日**: 2025-11-25  
+**最終改訂**: 2025-11-25  
+**プロジェクト名**: stock-analysis（日本電力業界特化株式分析システム）  
 **目的**: 東京電力・中部電力・JERA等の財務・株価データを自動収集・分析するダッシュボード開発における品質・セキュリティ・ガバナンス基準
 
 ---
@@ -54,7 +54,7 @@ def parse_xbrl(file_path):
             break
         process(item)
 
-# ✅ 完全な実装
+# ✅ 完全な実装（全XBRLアイテム処理）
 def parse_xbrl(file_path):
     # 全てのXBRLアイテムを処理
     for item in xbrl_items:
@@ -73,7 +73,7 @@ def parse_xbrl(file_path):
 - 各サイクルで具体性、正確性、再現性を向上
 - ベストプラクティスとの整合性を確認
 
-**改善サイクル例（株価データ取得仕様書の場合）**:
+**改善サイクル例（電力業界財務データ収集仕様書の場合）**:
 ```yaml
 cycle_1_初回生成:
   spec.md: 基本構造作成、テンプレートから生成
@@ -635,7 +635,7 @@ review_checklist:
 **レビュー実施例**:
 ```yaml
 pull_request_example:
-  title: "feat: Add Net-Net PBR calculation"
+  title: "feat: Add fuel cost adjustment calculation for JERA"
   
   reviewer_checklist:
     - question: "型安全性は確保されているか？"
@@ -1021,7 +1021,7 @@ flowchart LR
 ```yaml
 iteration_1:
   implementation:
-    feature: "NetNetPBR計算実装"
+    feature: "JERA燃料費調整額計算実装"
     code: "scripts/analyze.py"
   
   measurement:
@@ -1105,4 +1105,4 @@ technical_debt_policy:
 
 ---
 
-**バージョン**: 2.0.0 | **批准日**: 2025-11-22 | **最終改訂**: 2025-11-22
+**バージョン**: 1.0.0 | **批准日**: 2025-11-25 | **最終改訂**: 2025-11-25

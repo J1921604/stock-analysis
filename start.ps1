@@ -1,19 +1,58 @@
-﻿# Stock Analysis System Launcher
-param([string]$mode = "1")
+﻿# 電力業界財務分析システム - ワンコマンド起動スクリプト
+# ファイル名: start.ps1
+# バージョン: 1.0.0
+# 作成日: 2025-11-25
+# 用途: ローカル開発環境の起動を1コマンドで実行
+# 実行方法: .\start.ps1
 
-Write-Host "株式分析システム" -ForegroundColor Cyan
+# エラー時に停止
+$ErrorActionPreference = "Stop"
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "  電力業界財務分析システム v1.0.0" -ForegroundColor Cyan
+Write-Host "  ローカルプレビュー起動中..." -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
-if ($mode -eq "1" -or $mode -eq "") {
-    Write-Host "開発サーバーを起動します..." -ForegroundColor Green
-    Set-Location src
-    Start-Process "http://localhost:5000"
-    py -m http.server 5000
-} elseif ($mode -eq "2") {
-    Write-Host "GitHub Pagesを開きます..." -ForegroundColor Green
-    Start-Process "https://j1921604.github.io/stock-analysis/"
+# 1. 仮想環境の確認と有効化
+if (Test-Path ".\venv\Scripts\Activate.ps1") {
+    Write-Host "[1/4] 仮想環境を有効化しています..." -ForegroundColor Yellow
+    & .\venv\Scripts\Activate.ps1
 } else {
-    Write-Host "使用方法:" -ForegroundColor Yellow
-    Write-Host "  .\start.ps1      # 開発サーバー起動"
-    Write-Host "  .\start.ps1 2    # GitHub Pages表示"
+    Write-Host "[1/4] 仮想環境が見つかりません。新規作成中..." -ForegroundColor Yellow
+    python -m venv venv
+    & .\venv\Scripts\Activate.ps1
 }
+
+# 2. 依存関係のインストール
+Write-Host "[2/4] Python依存関係をインストール中..." -ForegroundColor Yellow
+pip install -q -r requirements.txt
+
+# 3. データベースの初期化確認
+if (-not (Test-Path ".\data\db\stock-analysis.db")) {
+    Write-Host "[3/4] データベースが見つかりません。初期化中..." -ForegroundColor Yellow
+    python scripts/init_db.py
+} else {
+    Write-Host "[3/4] データベース確認OK（TEPCO/中部電力/JERA 3社）" -ForegroundColor Green
+}
+
+# 4. ローカルサーバー起動とブラウザ自動起動
+Write-Host "[4/4] ローカルサーバーを起動しています..." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "========================================" -ForegroundColor Green
+Write-Host "  起動完了！" -ForegroundColor Green
+Write-Host "  URL: http://localhost:5000/src/index.html" -ForegroundColor Green
+Write-Host "  対象企業: 東京電力HD・中部電力・JERA" -ForegroundColor Green
+Write-Host "  終了するには Ctrl+C を押してください" -ForegroundColor Green
+Write-Host "========================================" -ForegroundColor Green
+Write-Host ""
+
+# ブラウザを自動起動（2秒待機してからサーバー起動）
+Start-Process "http://localhost:5000/src/index.html"
+Start-Sleep -Seconds 2
+
+# HTTPサーバー起動（フォアグラウンドで実行）
+python -m http.server 5000
+
+# サーバー終了後にPowerShellウィンドウを閉じる
+exit

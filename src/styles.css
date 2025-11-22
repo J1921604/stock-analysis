@@ -1,5 +1,6 @@
 /* ========================================
-   リセット・ベーススタイル
+   サイバーパンク株式分析システム
+   Dark theme with neon green & magenta accents
    ======================================== */
 * {
     margin: 0;
@@ -8,33 +9,70 @@
 }
 
 :root {
-    --primary-color: #2563eb;
-    --secondary-color: #475569;
-    --background: #f8fafc;
-    --surface: #ffffff;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --border: #e2e8f0;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    /* Cyberpunk Color Palette */
+    --neon-green: #00ff41;
+    --neon-green-glow: rgba(0, 255, 65, 0.6);
+    --magenta: #ff00ff;
+    --magenta-glow: rgba(255, 0, 255, 0.6);
+    --cyan: #00ffff;
+    --dark-bg: #0a0a0a;
+    --dark-surface: #1a1a1a;
+    --dark-surface-elevated: #252525;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --text-dim: #666666;
+    --border: #333333;
+    --border-glow: rgba(0, 255, 65, 0.3);
+    --success: var(--neon-green);
+    --warning: #ffaa00;
+    --danger: #ff0055;
+    --shadow: 0 4px 16px rgba(0, 255, 65, 0.15);
+    --shadow-lg: 0 8px 32px rgba(0, 255, 65, 0.25);
+    --glow-text: 0 0 8px var(--neon-green-glow);
+    --glow-box: 0 0 20px var(--neon-green-glow), inset 0 0 20px rgba(0, 255, 65, 0.1);
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+    font-family: 'Consolas', 'Courier New', 'Roboto Mono', monospace, 'Noto Sans JP', sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
-    background: var(--background);
+    background: var(--dark-bg);
+    max-width: 1600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 255, 65, 0.03) 2px,
+            rgba(0, 255, 65, 0.03) 4px
+        );
+    pointer-events: none;
+    z-index: 1;
+}
+
+body > * {
+    position: relative;
+    z-index: 2;
 }
 
 /* ========================================
-   ナビゲーション
+   ナビゲーション - Cyberpunk Edition
    ======================================== */
 .navbar {
-    background: var(--surface);
-    box-shadow: var(--shadow);
+    background: var(--dark-surface);
+    border-bottom: 2px solid var(--neon-green);
+    box-shadow: 0 0 20px var(--neon-green-glow);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -42,12 +80,16 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+    backdrop-filter: blur(10px);
 }
 
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: var(--neon-green);
+    text-shadow: var(--glow-text);
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .nav-links {
@@ -60,12 +102,38 @@ body {
     text-decoration: none;
     color: var(--text-secondary);
     font-weight: 500;
-    transition: color 0.2s;
+    transition: all 0.3s;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--neon-green);
+    transform: translateX(-50%);
+    transition: width 0.3s;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
-    color: var(--primary-color);
+    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green-glow);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
+}
+
+.nav-links a.active {
+    background: rgba(0, 255, 65, 0.1);
+    box-shadow: inset 0 0 10px var(--neon-green-glow);
 }
 
 .hamburger {
@@ -80,9 +148,10 @@ body {
 .hamburger span {
     width: 25px;
     height: 3px;
-    background: var(--text-primary);
+    background: var(--neon-green);
     border-radius: 2px;
     transition: all 0.3s;
+    box-shadow: 0 0 4px var(--neon-green-glow);
 }
 
 /* モバイルメニュー */
@@ -96,13 +165,14 @@ body {
         top: 100%;
         left: 0;
         right: 0;
-        background: var(--surface);
+        background: var(--dark-surface);
         flex-direction: column;
         gap: 0;
         padding: 0;
         max-height: 0;
         overflow: hidden;
-        box-shadow: var(--shadow-lg);
+        border-bottom: 2px solid var(--neon-green);
+        box-shadow: 0 8px 16px var(--neon-green-glow);
         transition: max-height 0.3s;
     }
     
@@ -121,40 +191,92 @@ body {
 }
 
 /* ========================================
-   メインコンテンツ
+   メインコンテンツ - Cyberpunk Edition
    ======================================== */
 main {
-    max-width: 1200px;
+    max-width: 1600px;
+    max-height: 900px;
     margin: 0 auto;
     padding: 2rem;
+    overflow-y: auto;
+}
+
+main::-webkit-scrollbar {
+    width: 8px;
+}
+
+main::-webkit-scrollbar-track {
+    background: var(--dark-surface);
+}
+
+main::-webkit-scrollbar-thumb {
+    background: var(--neon-green);
+    border-radius: 4px;
+    box-shadow: 0 0 8px var(--neon-green-glow);
 }
 
 /* ヒーローセクション */
 .hero {
     text-align: center;
     padding: 4rem 2rem;
-    background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-    color: white;
-    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(0, 255, 65, 0.15), rgba(255, 0, 255, 0.15));
+    border: 2px solid var(--neon-green);
+    box-shadow: var(--glow-box);
+    color: var(--text-primary);
+    border-radius: 8px;
     margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0, 255, 65, 0.03) 10px,
+        rgba(0, 255, 65, 0.03) 20px
+    );
+    animation: scan 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes scan {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50%, 50%); }
 }
 
 .hero h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
+    color: var(--neon-green);
+    text-shadow: 0 0 20px var(--neon-green-glow);
+    position: relative;
+    z-index: 1;
 }
 
 .hero .subtitle {
     font-size: 1.5rem;
     margin-bottom: 1rem;
-    opacity: 0.9;
+    color: var(--magenta);
+    text-shadow: 0 0 15px var(--magenta-glow);
+    position: relative;
+    z-index: 1;
 }
 
 .hero .description {
     font-size: 1.1rem;
     max-width: 800px;
     margin: 0 auto;
-    opacity: 0.85;
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 1;
 }
 
 @media (max-width: 768px) {
@@ -171,7 +293,7 @@ main {
     }
 }
 
-/* 機能カード */
+/* 機能カード - Cyberpunk */
 .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -180,27 +302,48 @@ main {
 }
 
 .feature-card {
-    background: var(--surface);
+    background: var(--dark-surface);
     padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 8px;
+    border: 1px solid var(--neon-green);
+    box-shadow: var(--glow-box);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.feature-card:hover::before {
+    left: 100%;
 }
 
 .feature-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 0 30px var(--neon-green-glow), inset 0 0 30px rgba(0, 255, 65, 0.15);
+    border-color: var(--magenta);
 }
 
 .feature-icon {
     font-size: 3rem;
     margin-bottom: 1rem;
+    filter: drop-shadow(0 0 8px var(--neon-green-glow));
 }
 
 .feature-card h2 {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    color: var(--primary-color);
+    color: var(--neon-green);
+    text-shadow: var(--glow-text);
 }
 
 .feature-card > p {
@@ -217,52 +360,92 @@ main {
     padding: 0.5rem 0;
     padding-left: 1.5rem;
     position: relative;
+    color: var(--text-primary);
 }
 
 .feature-list li::before {
-    content: "✓";
+    content: "▸";
     position: absolute;
     left: 0;
-    color: var(--success);
+    color: var(--neon-green);
     font-weight: bold;
+    text-shadow: 0 0 4px var(--neon-green-glow);
 }
 
-/* ボタン */
+/* ボタン - Cyberpunk Glowing Edition */
 .btn {
     display: inline-block;
     padding: 0.75rem 1.5rem;
-    border-radius: 0.375rem;
+    border-radius: 4px;
     text-decoration: none;
     font-weight: 600;
-    transition: all 0.2s;
+    transition: all 0.3s;
     cursor: pointer;
-    border: none;
+    border: 2px solid;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .btn-primary {
-    background: var(--primary-color);
-    color: white;
+    background: transparent;
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px var(--neon-green-glow), inset 0 0 10px rgba(0, 255, 65, 0.1);
+    text-shadow: 0 0 5px var(--neon-green-glow);
 }
 
-.btn-primary:hover {
-    background: #1d4ed8;
-    transform: translateY(-2px);
+.btn-primary:hover,
+.btn-primary:active {
+    background: var(--neon-green);
+    color: var(--dark-bg);
+    box-shadow: 0 0 30px var(--neon-green-glow), 0 0 60px var(--neon-green-glow), inset 0 0 20px rgba(0, 255, 65, 0.5);
+    transform: translateY(-2px) scale(1.05);
+    text-shadow: none;
 }
 
 .btn-secondary {
-    background: var(--secondary-color);
-    color: white;
+    background: transparent;
+    color: var(--magenta);
+    border-color: var(--magenta);
+    box-shadow: 0 0 10px var(--magenta-glow), inset 0 0 10px rgba(255, 0, 255, 0.1);
+    text-shadow: 0 0 5px var(--magenta-glow);
 }
 
-.btn-secondary:hover {
-    background: #334155;
+.btn-secondary:hover,
+.btn-secondary:active {
+    background: var(--magenta);
+    color: var(--dark-bg);
+    box-shadow: 0 0 30px var(--magenta-glow), 0 0 60px var(--magenta-glow), inset 0 0 20px rgba(255, 0, 255, 0.5);
+    transform: translateY(-2px) scale(1.05);
+    text-shadow: none;
 }
 
-/* 技術スタック */
+/* 技術スタック - Cyberpunk */
 .tech-stack {
-    background: var(--surface);
+    background: var(--dark-surface);
     padding: 2rem;
-    border-radius: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-glow);
     box-shadow: var(--shadow);
     margin-bottom: 3rem;
 }
@@ -270,7 +453,9 @@ main {
 .tech-stack h2 {
     text-align: center;
     margin-bottom: 2rem;
-    color: var(--primary-color);
+    color: var(--neon-green);
+    text-shadow: var(--glow-text);
+    font-size: 2rem;
 }
 
 .tech-grid {
@@ -281,25 +466,35 @@ main {
 
 .tech-item {
     padding: 1.5rem;
-    background: var(--background);
-    border-radius: 0.375rem;
-    border-left: 4px solid var(--primary-color);
+    background: var(--dark-bg);
+    border-radius: 4px;
+    border-left: 4px solid var(--neon-green);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    transition: all 0.3s;
+}
+
+.tech-item:hover {
+    border-left-color: var(--magenta);
+    box-shadow: 0 0 20px var(--magenta-glow);
+    transform: translateX(8px);
 }
 
 .tech-item h3 {
     margin-bottom: 0.5rem;
-    color: var(--text-primary);
+    color: var(--neon-green);
+    text-shadow: 0 0 5px var(--neon-green-glow);
 }
 
 .tech-item p {
     color: var(--text-secondary);
 }
 
-/* ステータス */
+/* ステータス - Cyberpunk */
 .status {
-    background: var(--surface);
+    background: var(--dark-surface);
     padding: 2rem;
-    border-radius: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-glow);
     box-shadow: var(--shadow);
     margin-bottom: 3rem;
 }
@@ -307,7 +502,9 @@ main {
 .status h2 {
     text-align: center;
     margin-bottom: 2rem;
-    color: var(--primary-color);
+    color: var(--neon-green);
+    text-shadow: var(--glow-text);
+    font-size: 2rem;
 }
 
 .status-grid {
@@ -319,71 +516,100 @@ main {
 .status-item {
     text-align: center;
     padding: 1.5rem;
-    background: var(--background);
-    border-radius: 0.375rem;
+    background: var(--dark-bg);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+}
+
+.status-item:hover {
+    border-color: var(--neon-green);
+    box-shadow: var(--glow-box);
+    transform: scale(1.05);
 }
 
 .status-label {
     font-size: 0.875rem;
     color: var(--text-secondary);
     margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .status-value {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: var(--neon-green);
+    text-shadow: var(--glow-text);
 }
 
-/* テーブル */
+/* テーブル - Cyberpunk */
 table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--surface);
+    background: var(--dark-surface);
     box-shadow: var(--shadow);
-    border-radius: 0.5rem;
+    border-radius: 8px;
     overflow: hidden;
+    border: 1px solid var(--border-glow);
 }
 
 thead {
-    background: var(--primary-color);
-    color: white;
+    background: linear-gradient(135deg, rgba(0, 255, 65, 0.2), rgba(255, 0, 255, 0.2));
+    color: var(--neon-green);
+    text-shadow: 0 0 5px var(--neon-green-glow);
 }
 
 th, td {
     padding: 1rem;
     text-align: left;
-}
-
-tbody tr {
     border-bottom: 1px solid var(--border);
 }
 
-tbody tr:hover {
-    background: var(--background);
+th {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-tbody tr:last-child {
+tbody tr {
+    transition: all 0.3s;
+}
+
+tbody tr:hover {
+    background: rgba(0, 255, 65, 0.05);
+    box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.1);
+}
+
+tbody tr:last-child td {
     border-bottom: none;
 }
 
-/* フッター */
+td {
+    color: var(--text-primary);
+}
+
+/* フッター - Cyberpunk */
 footer {
-    background: var(--surface);
+    background: var(--dark-surface);
     padding: 2rem;
     text-align: center;
     color: var(--text-secondary);
     margin-top: 4rem;
-    border-top: 1px solid var(--border);
+    border-top: 2px solid var(--neon-green);
+    box-shadow: 0 -4px 16px var(--neon-green-glow);
 }
 
 footer a {
-    color: var(--primary-color);
+    color: var(--neon-green);
     text-decoration: none;
+    text-shadow: 0 0 5px var(--neon-green-glow);
+    transition: all 0.3s;
 }
 
 footer a:hover {
-    text-decoration: underline;
+    color: var(--magenta);
+    text-shadow: 0 0 10px var(--magenta-glow);
 }
 
 /* ユーティリティクラス */

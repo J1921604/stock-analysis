@@ -1,10 +1,11 @@
 # 株式分析システム 要件定義書
 
 **バージョン**: 1.0.0
-**作成日**: 2025年11月22日
-**最終更新**: 2025年11月22日
+**作成日**: 2025-11-25
+**最終更新**: 2025-11-25
 **ステータス**: 要件確定
 **プロジェクト**: stock-analysis
+**対象企業**: 東京電力ホールディングス（9501）、中部電力（9502）、JERA（非上場）
 
 ---
 
@@ -28,7 +29,7 @@
 ```mermaid
 flowchart TB
     subgraph goal["ビジネス目標"]
-        A[個人投資家の意思決定支援]
+        A[電力業界投資家の意思決定支援]
         B[データ駆動型投資の実現]
         C[運用コストゼロの実現]
     end
@@ -37,20 +38,23 @@ flowchart TB
         D[完全自動化システム]
         E[AI活用による開発]
         F[GitHub中心設計]
+        G[電力業界特化分析]
     end
     
     subgraph outcome["期待成果"]
-        G[効率的な銘柄発見]
-        H[データに基づく判断]
-        I[継続的な運用]
+        H[TEPCO/中部電/JERA経営可視化]
+        I[燃料費期ずれ影響の把握]
+        J[継続的な運用]
     end
     
     A --> D
     B --> E
     C --> F
-    D --> G
-    E --> H
-    F --> I
+    A --> G
+    D --> H
+    E --> I
+    F --> J
+    G --> H
     
     style goal fill:#e1bee7
     style approach fill:#c8e6c9
@@ -61,23 +65,48 @@ flowchart TB
 
 **課題**:
 ```yaml
+power_industry_analysis_challenges:
+  jera_non_listed_complexity:
+    description: "JERAは非上場だが東電・中部電への影響が巨大"
+    challenges:
+      - "持分法投資利益の親会社決算への影響度計算が必要"
+      - "燃料調達コストがJERAに集約され、親会社の燃料費調整額に影響"
+      - "期ずれ影響額の手動計算: 30分/四半期"
+    solution: "自動化により期ずれ影響額を四半期ごとに即座に算出"
+  
+  fuel_cost_adjustment_lag:
+    description: "燃料費変動が電気料金に反映されるまでのタイムラグ"
+    challenges:
+      - "LNG価格急騰時、燃料費調整額での回収が3〜6ヶ月遅れる"
+      - "期ずれによる損益インパクトが数百億円規模"
+      - "手動での追跡は困難"
+    solution: "LNG価格とJEPXスポット価格、燃料費調整額を自動追跡・可視化"
+  
+  multi_company_comparison:
+    description: "東電・中部電・JERAの3社比較が煩雑"
+    challenges:
+      - "東電・中部電は上場、JERAは非上場で開示情報が異なる"
+      - "決算期ずれ（3月決算）の統一的な比較"
+      - "セグメント情報の整合性確保"
+    solution: "統一フォーマットでSQLiteに格納し、ダッシュボードで並列比較"
+
 manual_screening_issues:
   time_consuming:
-    description: "手動での銘柄スクリーニングは時間がかかる"
+    description: "手動での財務分析は時間がかかる"
     examples:
-      - "EDINET 4000銘柄の有価証券報告書を手動確認: 400時間"
-      - "NetNetPBR手計算: 10分/銘柄 × 4000 = 667時間"
-      - "オニール条件チェック: 15分/銘柄 × 4000 = 1000時間"
-    total_manual_hours: "2067時間（年間）"
+      - "EDINET XBRLダウンロード・解析: 1時間/四半期/社"
+      - "期ずれ影響額計算: 30分/四半期/社"
+      - "3社×4四半期 = 年間18時間"
+    total_manual_hours: "年間18時間 → 自動化で0時間"
   
   xbrl_complexity:
     description: "有価証券報告書（XBRL）の解析が複雑"
     challenges:
       - "XMLの深い階層構造（10階層以上）"
-      - "企業ごとに異なるタグ命名"
+      - "電力業界特有のタグ（燃料費、販売電力量等）"
       - "修正報告書の重複処理"
-      - "タグマッピングの保守"
     error_rate_manual: "5%（ヒューマンエラー）"
+    solution: "Pythonスクリプト（parse_xbrl.py）で自動解析、エラー率<1%"
   
   continuous_update_burden:
     description: "継続的なデータ更新に手間がかかる"
@@ -86,18 +115,33 @@ manual_screening_issues:
       - "週次でXBRL取得: 2時間"
       - "月次で解析実行: 4時間"
       - "年間合計: 約200時間"
-  
-  multi_strategy_difficulty:
-    description: "複数の投資手法を並行して運用したい"
-    challenges:
-      - "ネットネット、オニール、マーケット天井の3手法"
-      - "それぞれ異なるスクリーニング条件"
-      - "手動では3倍の時間（6201時間/年）"
+    solution: "GitHub Actions日次バッチで完全自動化"
 ```
 
 **解決策**:
 ```yaml
-github_actions_automation:
+github_centric_architecture:
+  actions: "日次バッチ（毎日18:00 JST）でデータ更新"
+  pages: "GitHub Pagesで静的ダッシュボード配信"
+  lfs: "SQLite DBをGit LFSで管理"
+  issues: "異常検知時にGitHub Issue自動作成→メール通知"
+  
+power_industry_specialization:
+  jera_period_gap_impact: "燃料費期ずれ影響額を自動計算"
+  jera_contribution: "TEPCO/中部電へのJERA貢献度（%）を可視化"
+  fuel_price_tracking: "LNG/石炭/原油価格とJEPX電力価格の相関分析"
+  sales_volume: "販売電力量（小売/卸売）の推移グラフ化"
+  
+data_model_design:
+  companies: "企業マスタ（tepco, chubu, jera）"
+  financial_statements: "BS/PL/CF統合テーブル"
+  power_industry_metrics: "電力業界特有指標テーブル"
+  market_indicators: "LNG価格、USD/JPY、JEPXスポット価格"
+  
+constitution_alignment:
+  quality_principles: "QP-001〜005準拠（段階的開発、日本語、トレーサビリティ等）"
+  project_specific: "PS-001〜005準拠（増分更新、電力業界指標、JERA分析等）"
+```
   benefit: "完全自動化"
   implementation:
     - "cron: 0 9 * * * で毎日18:00 JST実行"

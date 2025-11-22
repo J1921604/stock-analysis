@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: '0 1 * * *'  # 毎日9時（JST）に自動実行
+    - cron: '0 1 * * *'  # 毎日10:00 JST（UTC+9）に自動実行
 
 permissions:
   contents: read
@@ -44,10 +44,21 @@ jobs:
         run: |
           python scripts/insert_sample_data.py --db data/db/stock-analysis.db
       
-      - name: Run data pipeline (placeholder)
+      - name: Run NetNet analysis
         run: |
-          echo "Data pipeline execution would run here"
-          echo "Skipping for initial deployment"
+          python scripts/analyzers/netnet.py --db data/db/stock-analysis.db
+      
+      - name: Run O'Neil analysis
+        run: |
+          python scripts/analyzers/oneil.py --db data/db/stock-analysis.db
+      
+      - name: Run Market Top detection
+        run: |
+          python scripts/analyzers/market_top.py --db data/db/stock-analysis.db
+      
+      - name: Build site
+        run: |
+          python scripts/build.py
       
       - name: Setup Pages
         uses: actions/configure-pages@v4

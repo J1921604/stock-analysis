@@ -3,73 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>株式分析システム</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <title>電力業界財務分析システム | TEPCO・中部電力・JERA</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <nav class="navbar">
-            <div class="logo">📊 株式分析システム</div>
+            <div class="logo">⚡ 電力業界財務分析システム</div>
             <button class="hamburger" aria-label="メニュー" id="hamburger">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
             <ul class="nav-links" id="navLinks">
-                <li><a href="index.html" class="active">ホーム</a></li>
-                <li><a href="pages/netnet.html">NetNetPBR</a></li>
-                <li><a href="pages/oneil.html">オニール</a></li>
-                <li><a href="pages/market-top.html">マーケット天井</a></li>
+                <li><a href="index.html" class="active">ダッシュボード</a></li>
+                <li><a href="#tepco">東京電力HD</a></li>
+                <li><a href="#chubu">中部電力</a></li>
+                <li><a href="#jera">JERA</a></li>
             </ul>
         </nav>
     </header>
     
     <main>
         <section class="hero">
-            <h1>株式分析システム</h1>
-            <p class="subtitle">バフェット・グレアム・リバモア・オニールの投資戦略を実装</p>
+            <h1>電力業界財務分析システム</h1>
+            <p class="subtitle">EDINET XBRL自動取得による日次財務データ更新</p>
             <p class="description">
-                完全自動化された株式分析システムで、データ駆動型投資を実現します。<br>
-                EDINET XBRLデータを活用し、割安株検出・成長株スクリーニング・市場リスク判定を提供します。
+                東京電力ホールディングス・中部電力・JERAの財務諸表を毎日自動取得し、<br>
+                電力業界特有の指標（燃料費調整額、JERA期ずれ影響、親会社貢献度）を可視化します。
             </p>
         </section>
         
         <section class="features">
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
-                <h2>NetNetPBR分析</h2>
-                <p>即時現金化可能資産ベースの割安株検出</p>
+            <div class="feature-card" id="tepco">
+                <div class="feature-icon">🏢</div>
+                <h2>東京電力ホールディングス (9501)</h2>
+                <p>燃料費調整額・JERA持分法利益の影響分析</p>
                 <ul class="feature-list">
-                    <li>グレアムの投資哲学に基づく</li>
-                    <li>保守的な資産評価（割引率適用）</li>
-                    <li>NetNetPBR < 1.0で割安判定</li>
+                    <li>EDINET企業コード: E04498</li>
+                    <li>JERA持分法利益の貢献度（%）</li>
+                    <li>ROE・ROA・営業利益率の推移</li>
                 </ul>
-                <a href="pages/netnet.html" class="btn btn-primary">詳細を見る</a>
+                <button class="btn btn-primary" data-company="tepco">財務データ表示</button>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <h2>オニールスクリーナー</h2>
-                <p>EPS成長率・リラティブストレングス分析</p>
+            <div class="feature-card" id="chubu">
+                <div class="feature-icon">🔌</div>
+                <h2>中部電力 (9502)</h2>
+                <p>JERA共同出資・火力発電依存度の分析</p>
                 <ul class="feature-list">
-                    <li>EPS成長率（3年・5年CAGR）</li>
-                    <li>リラティブストレングス（52週）</li>
-                    <li>売上高成長率・利益率チェック</li>
+                    <li>EDINET企業コード: E04285</li>
+                    <li>JERA共同出資比率（50%）</li>
+                    <li>燃料費感応度・発電構成比率</li>
                 </ul>
-                <a href="pages/oneil.html" class="btn btn-primary">詳細を見る</a>
+                <button class="btn btn-primary" data-company="chubu">財務データ表示</button>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">⚠️</div>
-                <h2>マーケット天井検出</h2>
-                <p>分配日カウントによる市場リスク判定</p>
+            <div class="feature-card" id="jera">
+                <div class="feature-icon">⚡</div>
+                <h2>JERA (非上場)</h2>
+                <p>燃料費期ずれ影響・親会社への貢献度分析</p>
                 <ul class="feature-list">
-                    <li>分配日判定（TOPIX下落 + 出来高増）</li>
-                    <li>25営業日間カウント</li>
-                    <li>5回以上で天井警告</li>
+                    <li>EDINET企業コード: E36542</li>
+                    <li>期ずれ影響額（燃料費調整額との差額）</li>
+                    <li>TEPCO/中部電への持分法利益貢献</li>
                 </ul>
-                <a href="pages/market-top.html" class="btn btn-primary">詳細を見る</a>
+                <button class="btn btn-primary" data-company="jera">財務データ表示</button>
             </div>
         </section>
         
@@ -78,19 +78,19 @@
             <div class="tech-grid">
                 <div class="tech-item">
                     <h3>バックエンド</h3>
-                    <p>Python 3.11、pandas、lxml、SQLite</p>
+                    <p>Python 3.11+、pandas 2.1.4、lxml 4.9.3、yfinance 0.2.32</p>
                 </div>
                 <div class="tech-item">
                     <h3>フロントエンド</h3>
-                    <p>ES2022+、sqlite-wasm、lightweight-charts</p>
+                    <p>sql.js 1.8.0、Chart.js 4.4.0、Tailwind CSS 3.3.0</p>
                 </div>
                 <div class="tech-item">
                     <h3>インフラ</h3>
-                    <p>GitHub Actions、GitHub Pages、Git LFS</p>
+                    <p>GitHub Actions（日次自動更新）、GitHub Pages、Git LFS</p>
                 </div>
                 <div class="tech-item">
                     <h3>データソース</h3>
-                    <p>EDINET XBRL、Yahoo Finance</p>
+                    <p>EDINET XBRL API v2、Yahoo Finance（株価）、市場指標（LNG/JEPX）</p>
                 </div>
             </div>
         </section>
@@ -103,36 +103,71 @@
                     <div class="status-value" id="lastUpdate">読込中...</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">解析銘柄数</div>
-                    <div class="status-value" id="companyCount">-</div>
+                    <div class="status-label">対象企業数</div>
+                    <div class="status-value" id="companyCount">3社</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">割安株数</div>
-                    <div class="status-value" id="undervaluedCount">-</div>
+                    <div class="status-label">最新決算期</div>
+                    <div class="status-value" id="latestPeriod">-</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">マーケット状態</div>
-                    <div class="status-value" id="marketStatus">正常</div>
+                    <div class="status-label">異常検知</div>
+                    <div class="status-value" id="alertStatus">正常</div>
                 </div>
             </div>
         </section>
     </main>
     
     <footer>
-        <p>&copy; 2025 株式分析システム | GitHub: <a href="https://github.com/J1921604/stock-analysis" target="_blank">J1921604/stock-analysis</a></p>
+        <p>&copy; 2025 電力業界財務分析システム v1.0.0 | GitHub: <a href="https://github.com/J1921604/stock-analysis" target="_blank">J1921604/stock-analysis</a></p>
     </footer>
     
+    <script src="https://sql.js.org/dist/sql-wasm.js"></script>
+    <script src="db-loader.js"></script>
     <script>
         // ハンバーガーメニュー
         document.getElementById('hamburger').addEventListener('click', function() {
             document.getElementById('navLinks').classList.toggle('active');
         });
         
-        // システムステータス更新（仮データ）
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('ja-JP');
-        document.getElementById('companyCount').textContent = '2社';
-        document.getElementById('undervaluedCount').textContent = '準備中';
-        document.getElementById('marketStatus').textContent = '正常';
+        // データベース読み込み
+        async function loadSystemStatus() {
+            try {
+                // TODO: db-loader.js実装後に有効化
+                // const loader = new DatabaseLoader('stock-analysis.db');
+                // const success = await loader.init();
+                
+                // 仮の実装（Phase 2完了後に実データ表示）
+                const success = false;
+                
+                if (success) {
+                    // データベースから取得
+                    document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('ja-JP');
+                    // document.getElementById('latestPeriod').textContent = loader.getLatestPeriod();
+                    // document.getElementById('alertStatus').textContent = loader.hasAlerts() ? '検知あり' : '正常';
+                } else {
+                    // Phase 1完了状態
+                    document.getElementById('lastUpdate').textContent = 'Phase 2実装中';
+                    document.getElementById('latestPeriod').textContent = 'データなし';
+                    document.getElementById('alertStatus').textContent = '未実装';
+                }
+            } catch (error) {
+                console.error('データベース読み込みエラー:', error);
+                document.getElementById('lastUpdate').textContent = 'エラー';
+                document.getElementById('companyCount').textContent = 'エラー';
+            }
+        }
+        
+        // 財務データ表示ボタン
+        document.querySelectorAll('.btn-primary').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const company = this.getAttribute('data-company');
+                alert(`${company}の財務データ表示機能は Phase 3（User Story 2）で実装予定です。`);
+            });
+        });
+        
+        // ページ読み込み時に実行
+        window.addEventListener('DOMContentLoaded', loadSystemStatus);
     </script>
 </body>
 </html>
