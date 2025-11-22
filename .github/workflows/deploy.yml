@@ -50,7 +50,7 @@ jobs:
         run: |
           if [ -z "$EDINET_API_KEY" ]; then
             echo "[WARNING] EDINET_API_KEY not set. Skipping XBRL fetch."
-            echo "Get your free key at https://disclosure2.edinet-fsa.go.jp/WZEK0020.aspx"
+            echo "Get your free key at https://disclosure2.edinet-fsa.go.jp/WEEK0010.aspx"
             echo "Set as GitHub Secret: Settings → Secrets → EDINET_API_KEY"
           else
             python scripts/fetch_xbrl.py --ticker 9501 --output data/raw/xbrl || echo "[FALLBACK] XBRL fetch failed, using cached data"

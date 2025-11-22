@@ -45,7 +45,7 @@ Write-Host "[4/4] ローカルサーバーを起動しています..." -Foregrou
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "  起動完了！" -ForegroundColor Green
-Write-Host "  URL: http://localhost:5000/src/index.html" -ForegroundColor Green
+Write-Host "  URL: http://localhost:5000/index.html" -ForegroundColor Green
 Write-Host "  対象企業: 東京電力HD・中部電力・JERA" -ForegroundColor Green
 Write-Host "  終了するには Ctrl+C を押してください" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
@@ -53,14 +53,20 @@ Write-Host ""
 
 # HTTPサーバー起動（バックグラウンドでジョブとして実行）
 Write-Host "サーバーを起動中..." -ForegroundColor Yellow
-$serverJob = Start-Job -ScriptBlock { python -m http.server 5000 }
+# srcディレクトリから起動
+Push-Location src
+$serverJob = Start-Job -ScriptBlock { 
+    Set-Location $using:PWD
+    python -m http.server 5000 
+}
+Pop-Location
 
 # サーバー起動待機（3秒）
 Start-Sleep -Seconds 3
 
 # ブラウザを自動起動
 Write-Host "ブラウザを起動しています..." -ForegroundColor Yellow
-Start-Process "http://localhost:5000/src/index.html"
+Start-Process "http://localhost:5000/index.html"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
